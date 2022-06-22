@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define suse_version +suse.58.g4dbc543953
+%define suse_version +suse.18.g949d6bb720
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -72,7 +72,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        250.6
+Version:        251.2
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -547,6 +547,7 @@ Requires:       libtss2-rc0
 Requires:       lz4
 Requires:       make
 Requires:       netcat
+Requires:       python3-pexpect
 Requires:       qemu-kvm
 Requires:       quota
 Requires:       socat
@@ -689,6 +690,7 @@ Have fun with these services at your own risk.
         -Dnss-systemd=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
         -Dselinux=%{when_not bootstrap} \
+        -Dsysupdate=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \
@@ -975,7 +977,6 @@ pam-config --add --systemd || :
 # in %%post. However this shouldn't be an issue since all files the
 # main package ships are owned by root.
 %sysusers_create systemd-journal.conf
-%sysusers_create systemd-network.conf
 %sysusers_create systemd-timesync.conf
 
 [ -e %{_localstatedir}/lib/random-seed ] && mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/ || :
@@ -1197,6 +1198,8 @@ fi
 
 %post network
 %if %{with networkd}
+%sysusers_create systemd-network.conf
+%tmpfiles_create systemd-network.conf
 %service_add_post systemd-networkd.service
 %service_add_post systemd-networkd-wait-online.service
 %endif
@@ -1302,13 +1305,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.33.0
+%{_libdir}/libsystemd.so.0.34.0
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.3
+%{_libdir}/libudev.so.1.7.4
 
 %if %{with coredump}
 %files coredump
