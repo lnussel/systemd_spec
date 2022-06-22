@@ -952,6 +952,7 @@ find %{buildroot}%{_testsuitedir}/ -name .git\* -exec rm -fr {} \;
 %endif
 
 %if %{without bootstrap}
+rm -f systemd.lang
 %find_lang systemd
 %endif
 
