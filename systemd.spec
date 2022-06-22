@@ -628,7 +628,7 @@ Components that turn out to be stable and considered as fully
 supported will be merged into the main package or moved into a
 dedicated package.
 
-The package contains: homed, pstore, repart, userdbd.
+The package contains: homed, repart, userdbd.
 
 Have fun with these services at your own risk.
 %endif
@@ -681,6 +681,8 @@ Have fun with these services at your own risk.
         -Doomd=false \
         -Dsmack=false \
         \
+        -Dpstore=true \
+        \
         -Dapparmor=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
@@ -718,7 +720,6 @@ Have fun with these services at your own risk.
         -Dresolve=%{when resolved} \
         \
         -Dhomed=%{when experimental} \
-        -Dpstore=%{when experimental} \
         -Drepart=%{when experimental} \
         -Duserdb=%{when experimental} \
         \
@@ -1082,6 +1083,9 @@ fi
 # Avoid restarting logind until fixed upstream (issue #1163)
 
 %pre -n udev%{?mini}
+%systemd_pre remote-cryptsetup.target
+%systemd_pre systemd-pstore.service
+
 # New installations uses the last compat symlink generation number
 # (currently at 2), which basically disables all compat symlinks. On
 # old systems, the file doesn't exist. This is equivalent to
@@ -1094,7 +1098,10 @@ fi
 %regenerate_initrd_post
 %udev_hwdb_update
 
+%tmpfiles_create systemd-pstore.conf
+
 %systemd_post remote-cryptsetup.target
+%systemd_post systemd-pstore.service
 
 # add KERNEL name match to existing persistent net rules
 sed -ri '/KERNEL/ ! { s/NAME="(eth|wlan|ath)([0-9]+)"/KERNEL=="\1*", NAME="\1\2"/}' \
@@ -1103,6 +1110,10 @@ sed -ri '/KERNEL/ ! { s/NAME="(eth|wlan|ath)([0-9]+)"/KERNEL=="\1*", NAME="\1\2"
 # cleanup old stuff
 rm -f /etc/sysconfig/udev
 rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
+
+%preun -n udev%{?mini}
+%systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
+%systemd_preun systemd-pstore.service
 
 %postun -n udev%{?mini}
 %regenerate_initrd_post
@@ -1120,7 +1131,8 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 # Note that when systemd-udevd is restarted, there will always be a short time
 # frame where no socket will be listening to the events sent by the kernel, no
 # matter if the socket unit is restarted in first or not.
-%service_del_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
+%systemd_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
+%systemd_postun systemd-pstore.service
 
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
@@ -1252,23 +1264,18 @@ fi
 
 %if %{with experimental}
 %pre experimental
-%service_add_pre systemd-pstore.service
 %service_add_pre systemd-userdbd.service systemd-userdbd.socket
 %service_add_pre systemd-homed.service
 
 %post experimental
-%tmpfiles_create systemd-pstore.conf
-%service_add_post systemd-pstore.service
 %service_add_post systemd-userdbd.service systemd-userdbd.socket
 %service_add_post systemd-homed.service
 
 %preun experimental
-%service_del_preun systemd-pstore.service
 %service_del_preun systemd-userdbd.service systemd-userdbd.socket
 %service_del_preun systemd-homed.service
 
 %postun experimental
-%service_del_postun systemd-pstore.service
 %service_del_postun systemd-userdbd.service systemd-userdbd.socket
 %service_del_postun systemd-homed.service
 %endif
@@ -1402,11 +1409,6 @@ fi
 %if %{with experimental}
 %files experimental
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/systemd/pstore.conf
-%{_prefix}/lib/systemd/systemd-pstore
-%{_unitdir}/systemd-pstore.service
-%{_tmpfilesdir}/systemd-pstore.conf
-%{_mandir}/man*/*pstore*
 %{_bindir}/systemd-repart
 %{_unitdir}/systemd-repart.service
 %{_mandir}/man*/*repart*
