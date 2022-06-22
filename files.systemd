@@ -424,8 +424,9 @@
 %{_sysconfdir}/xdg/systemd/user
 %{_sysctldir}/99-sysctl.conf
 %{_systemd_user_env_generator_dir}/30-systemd-environment-d-generator
-%{_systemd_util_dir}/libsystemd-core-251.so
-%{_systemd_util_dir}/libsystemd-shared-251.so
+%dir %{_libdir}/systemd
+%{_libdir}/systemd/libsystemd-core-251.so
+%{_libdir}/systemd/libsystemd-shared-251.so
 %{_systemd_util_dir}/ntp-units.d/80-systemd-timesync.list
 %if %{with downstream_build}
 %{_systemd_util_dir}/scripts/migrate-sysconfig-i18n.sh
