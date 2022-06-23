@@ -641,7 +641,7 @@ Components that turn out to be stable and considered as fully
 supported will be merged into the main package or moved into a
 dedicated package.
 
-The package contains: homed, repart, userdbd.
+The package contains: homed, repart, userdbd, oomd, sysupdate
 
 Have fun with these services at your own risk.
 %endif
@@ -705,7 +705,6 @@ Have fun with these services at your own risk.
         -Dnss-systemd=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
         -Dselinux=%{when_not bootstrap} \
-        -Dsysupdate=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \
@@ -737,6 +736,8 @@ Have fun with these services at your own risk.
         -Dhomed=%{when experimental} \
         -Drepart=%{when experimental} \
         -Duserdb=%{when experimental} \
+        -Doomd=%{when experimental} \
+        -Dsysupdate=%{when experimental} \
         \
         -Dtests=%{when testsuite unsafe} \
         -Dinstall-tests=%{when testsuite}
@@ -1282,18 +1283,22 @@ fi
 %pre experimental
 %service_add_pre systemd-userdbd.service systemd-userdbd.socket
 %service_add_pre systemd-homed.service
+%service_add_pre systemd-oomd.service
 
 %post experimental
 %service_add_post systemd-userdbd.service systemd-userdbd.socket
 %service_add_post systemd-homed.service
+%service_add_post systemd-oomd.service
 
 %preun experimental
 %service_del_preun systemd-userdbd.service systemd-userdbd.socket
 %service_del_preun systemd-homed.service
+%service_del_preun systemd-oomd.service
 
 %postun experimental
 %service_del_postun systemd-userdbd.service systemd-userdbd.socket
 %service_del_postun systemd-homed.service
+%service_del_postun systemd-oomd.service
 %endif
 
 %files
@@ -1437,6 +1442,7 @@ fi
 %{_unitdir}/systemd-userdbd.socket
 %{_mandir}/man*/userdbctl*
 %{_mandir}/man*/systemd-userdbd*
+# homed
 %config(noreplace) %{_sysconfdir}/systemd/homed.conf
 %{_bindir}/homectl
 %{_prefix}/lib/systemd/systemd-homed
@@ -1456,6 +1462,32 @@ fi
 %{_mandir}/man*/*homed*
 %{_mandir}/man*/org.freedesktop.home1*
 %{_mandir}/man*/pam_systemd_home*
+# oomd
+%config(noreplace) %{_sysconfdir}/systemd/oomd.conf
+%{_bindir}/oomctl
+%{_prefix}/lib/systemd/systemd-oomd
+%{_unitdir}/systemd-oomd.service
+%{_unitdir}/systemd-oomd.socket
+%{_datadir}/dbus-1/interfaces/org.freedesktop.oom1.Manager.xml
+%{_datadir}/dbus-1/system-services/org.freedesktop.oom1.service
+%{_datadir}/dbus-1/system.d/org.freedesktop.oom1.conf
+%{_sysusersdir}/systemd-oom.conf
+%{_mandir}/man*/*oomctl*
+%{_mandir}/man*/*oomd*
+%{_mandir}/man*/org.freedesktop.oom1*
+%{_datadir}/zsh/site-functions/_oomctl
+%{_datadir}/bash-completion/completions/oomctl
 %endif
-
+# sysupdate
+%{_prefix}/lib/systemd/systemd-sysupdate
+%{_mandir}/man5/sysupdate.d.5*
+%{_mandir}/man8/systemd-sysupdate-reboot.service.8*
+%{_mandir}/man8/systemd-sysupdate-reboot.timer.8*
+%{_mandir}/man8/systemd-sysupdate.8*
+%{_mandir}/man8/systemd-sysupdate.service.8*
+%{_mandir}/man8/systemd-sysupdate.timer.8*
+%{_unitdir}/systemd-sysupdate-reboot.service
+%{_unitdir}/systemd-sysupdate-reboot.timer
+%{_unitdir}/systemd-sysupdate.service
+%{_unitdir}/systemd-sysupdate.timer
 %changelog
