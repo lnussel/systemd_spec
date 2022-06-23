@@ -49,6 +49,7 @@
 %bcond_with     experimental
 %bcond_with     testsuite
 %bcond_with     html
+%bcond_with     bpf
 %else
 %define mini %nil
 %bcond_with     bootstrap
@@ -68,6 +69,7 @@
 %bcond_without  experimental
 %bcond_without  testsuite
 %bcond_without  html
+%bcond_without  bpf
 %endif
 # Kept to ease migrations toward SLE
 %bcond_with     split_usr
@@ -114,6 +116,12 @@ BuildRequires:  suse-module-tools >= 12.4
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
 BuildRequires:  pkgconfig(libpci) >= 3
+%if %{with bpf}
+BuildRequires:  bpftool
+BuildRequires:  clang
+BuildRequires:  llvm
+BuildRequires:  pkgconfig(libbpf)
+%endif
 
 %if %{with bootstrap}
 #!BuildIgnore:  dbus-1
@@ -718,6 +726,8 @@ Have fun with these services at your own risk.
         \
         -Dsbat-distro-pkgname="%{name}" \
         -Dsbat-distro-version="%{version}-%{release}" \
+        \
+        -Dbpf-framework=%{when bpf} \
         \
         -Ddefault-dnssec=no \
         -Ddns-servers='' \
