@@ -28,6 +28,7 @@
 %{_bindir}/udevadm
 %if %{without bootstrap}
 %{_datadir}/bash-completion/completions/udevadm
+%{_datadir}/bash-completion/completions/systemd-cryptenroll
 %endif
 %{_datadir}/pkgconfig/udev.pc
 %if %{without bootstrap}
