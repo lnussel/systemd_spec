@@ -397,6 +397,9 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(zlib)
 %endif
 Requires:       %{name} = %{version}-%{release}
+# import-tar needs tar and gpg
+Requires:       /usr/bin/tar
+Requires:       /usr/bin/gpg
 %systemd_requires
 Obsoletes:      nss-mymachines < %{version}-%{release}
 Provides:       nss-mymachines = %{version}-%{release}
