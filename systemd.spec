@@ -48,6 +48,7 @@
 %bcond_with     sysvcompat
 %bcond_with     experimental
 %bcond_with     testsuite
+%bcond_with     html
 %else
 %define mini %nil
 %bcond_with     bootstrap
@@ -66,6 +67,7 @@
 %bcond_without  sysvcompat
 %bcond_without  experimental
 %bcond_without  testsuite
+%bcond_without  html
 %endif
 # Kept to ease migrations toward SLE
 %bcond_with     split_usr
@@ -230,7 +232,7 @@ Supplements:    (systemd and patterns-base-documentation)
 %endif
 
 %description doc
-The HTML documentation for systemd.
+The documentation for systemd.
 
 %package devel
 Summary:        Development files for libsystemd and libudev
@@ -690,7 +692,7 @@ Have fun with these services at your own risk.
         -Dapparmor=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
-        -Dhtml=%{when_not bootstrap} \
+        -Dhtml=%{when html} \
         -Dman=%{when_not bootstrap} \
         -Dnss-myhostname=%{when_not bootstrap} \
         -Dnss-systemd=%{when_not bootstrap} \
