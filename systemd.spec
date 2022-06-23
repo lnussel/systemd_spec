@@ -28,6 +28,9 @@
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
+%if 0%{?_build_in_place}
+%define git_version %(v=$(git describe --tag --abbrev=0 | sed -e 's/^v//;s/-/~/');r=$(git log '-n1' '--date=format:%%Y%%m%%d.%%H%%M%%S' '--no-show-signature' "--pretty=format:+git%%cd.%%h");echo "$v$r")
+%endif
 
 # Similar to %%with but returns true/false. The 'true' value can be redefined
 # when a second parameter is passed.
@@ -92,8 +95,8 @@ fi \
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        %{systemd_version}
-Release:        0
+Version:        %{?git_version}
+Release:        1
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -134,6 +137,9 @@ BuildRequires:  pam-devel
 BuildRequires:  python3-Jinja2
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
+%if 0%{?_build_in_place}
+BuildRequires:  git-core
+%endif
 
 %if %{with bootstrap}
 #!BuildIgnore:  dbus-1
@@ -183,7 +189,7 @@ Provides:       systemd-analyze = %{version}-%{release}
 Obsoletes:      pm-utils <= 1.4.1
 Obsoletes:      suspend <= 1.0
 Obsoletes:      systemd-analyze < 201
-Source0:        systemd-v%{version}%{archive_version}.tar.xz
+Source0:        systemd-%{version}.tar
 Source1:        systemd-rpmlintrc
 Source2:        systemd-user
 Source3:        systemd-update-helper
@@ -730,7 +736,7 @@ The HTML documentation for systemd.
 %endif
 
 %prep
-%autosetup -p1 -n systemd-v%{version}%{archive_version}
+%autosetup -p1
 
 %build
 # Disable _FORTIFY_SOURCE=3 as it get confused by the use of
@@ -745,7 +751,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %else
         -Dmode=release \
 %endif
-        -Dversion-tag=%{version}%{archive_version} \
+        -Dversion-tag=%{version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
         -Drootprefix=/usr \
