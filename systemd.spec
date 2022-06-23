@@ -65,7 +65,12 @@
 %else
 %bcond_with     sd_boot
 %endif
+%bcond_without  downstream_build
+%if %{with downstream_build}
 %bcond_without  sysvcompat
+%else
+%bcond_with     sysvcompat
+%endif
 %bcond_without  experimental
 %bcond_without  testsuite
 %bcond_without  html
@@ -174,12 +179,14 @@ Source4:        systemd-sysv-install
 %endif
 Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
+%if %{with downstream_build}
 Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
 Source100:      scripts-systemd-fix-machines-btrfs-subvol.sh
 Source101:      scripts-systemd-upgrade-from-pre-210.sh
 Source102:      scripts-systemd-migrate-sysconfig-i18n.sh
+%endif
 
 Source200:      files.systemd
 Source201:      files.udev
@@ -198,6 +205,7 @@ Source206:      files.uefi-boot
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
+%if %{with downstream_build}
 Patch1:         0001-restore-var-run-and-var-lock-bind-mount-if-they-aren.patch
 Patch2:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
 Patch3:         0003-strip-the-domain-part-from-etc-hostname-when-setting.patch
@@ -217,6 +225,9 @@ Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
 # upstream and need an urgent fix. Even in this case, the patches are
 # temporary and should be removed as soon as a fix is merged by
 # upstream.
+
+# /downstream_build
+%endif
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
@@ -763,11 +774,15 @@ rm %{buildroot}%{_mandir}/man1/resolvconf.1*
 
 %if %{with sysvcompat}
 install -m0755 -D %{SOURCE4}  %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
+%else
+# XXX: bug upstream installing manpage even when disabled
+rm %{buildroot}%{_mandir}/man8/systemd-update-utmp-runlevel.service.8
 %endif
 
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/nspawn
 
+%if %{with downstream_build}
 # Package the scripts used to fix all packaging issues. Also drop the
 # "scripts-{systemd/udev}" prefix which is used because osc doesn't
 # allow directories in the workspace...
@@ -776,6 +791,7 @@ install -m0755 -D %{SOURCE100} %{buildroot}%{_systemd_util_dir}/scripts/fix-mach
 %endif
 install -m0755 -D %{SOURCE101} %{buildroot}%{_systemd_util_dir}/scripts/upgrade-from-pre-210.sh
 install -m0755 -D %{SOURCE102} %{buildroot}%{_systemd_util_dir}/scripts/migrate-sysconfig-i18n.sh
+%endif
 
 %if %{with split_usr}
 mkdir -p %{buildroot}/{bin,sbin}
@@ -877,8 +893,10 @@ mkdir -p %{buildroot}%{_systemd_system_env_generator_dir}
 mkdir -p %{buildroot}%{_systemd_user_env_generator_dir}
 
 # ensure after.local wrapper is called
+%if %{with downstream_build}
 install -m 644 %{SOURCE11} %{buildroot}%{_unitdir}/
 ln -s ../after-local.service %{buildroot}%{_unitdir}/multi-user.target.wants/
+%endif
 
 # ghost directories with default permissions.
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
@@ -928,6 +946,7 @@ install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
 # consume those configs (like glibc or pam), see bsc#1170146.
 rm -fr %{buildroot}%{_datadir}/factory/*
 
+%if %{with downstream_build}
 # Add entries for xkeyboard-config converted keymaps; mappings, which
 # already exist in original systemd mapping table are being ignored
 # though, i.e. not overwritten; needed as long as YaST uses console
@@ -945,6 +964,7 @@ fi
 # kbd-model-map.legacy is used to provide mapping for legacy keymaps,
 # which may still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
+%endif
 
 # Don't ship systemd-journald-audit.socket as there's no other way for
 # us to prevent journald from recording audit messages in the journal
@@ -968,6 +988,8 @@ rm -f systemd.lang
 %find_lang systemd
 %endif
 
+# disable all scriptlets for git build
+%if %{with downstream_build}
 # Build of installation images uses a hard coded list of packages with
 # a %%pre that needs to be run during the build. systemd is one of them
 # so keep the section even if it's empty.
@@ -1299,6 +1321,9 @@ fi
 %service_del_postun systemd-userdbd.service systemd-userdbd.socket
 %service_del_postun systemd-homed.service
 %service_del_postun systemd-oomd.service
+%endif
+
+# /downstream_build
 %endif
 
 %files
