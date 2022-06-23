@@ -43,7 +43,9 @@
 %dir %{_systemd_user_env_generator_dir}
 %dir %{_systemd_util_dir}
 %dir %{_systemd_util_dir}/ntp-units.d
+%if %{with downstream_build}
 %dir %{_systemd_util_dir}/scripts
+%endif
 %dir %{_systemd_util_dir}/system-preset
 %dir %{_systemd_util_dir}/system-shutdown
 %dir %{_systemd_util_dir}/system-sleep
@@ -328,7 +330,9 @@
 %{_mandir}/man8/halt.8.gz
 %{_mandir}/man8/pam_systemd.8.gz
 %{_mandir}/man8/poweroff.8.gz
+%if %{with downstream_build}
 %{_mandir}/man8/rc-local.service.8.gz
+%endif
 %{_mandir}/man8/reboot.8.gz
 %{_mandir}/man8/shutdown.8.gz
 %{_mandir}/man8/systemd-ask-password-console.path.8.gz
@@ -423,8 +427,10 @@
 %{_systemd_util_dir}/libsystemd-core-251.so
 %{_systemd_util_dir}/libsystemd-shared-251.so
 %{_systemd_util_dir}/ntp-units.d/80-systemd-timesync.list
+%if %{with downstream_build}
 %{_systemd_util_dir}/scripts/migrate-sysconfig-i18n.sh
 %{_systemd_util_dir}/scripts/upgrade-from-pre-210.sh
+%endif
 %{_systemd_util_dir}/system-preset/99-default.preset
 %{_systemd_util_dir}/systemd
 %{_systemd_util_dir}/systemd-ac-power
@@ -496,7 +502,9 @@
 %{_udevrulesdir}/71-seat.rules
 %{_udevrulesdir}/73-seat-late.rules
 %{_udevrulesdir}/99-systemd.rules
+%if %{with downstream_build}
 %{_unitdir}/after-local.service
+%endif
 %{_unitdir}/autovt@.service
 %{_unitdir}/basic.target
 %{_unitdir}/blockdev@.target
@@ -541,7 +549,9 @@
 %{_unitdir}/local-fs.target.wants/tmp.mount
 %{_unitdir}/modprobe@.service
 %{_unitdir}/multi-user.target
+%if %{with downstream_build}
 %{_unitdir}/multi-user.target.wants/after-local.service
+%endif
 %{_unitdir}/multi-user.target.wants/getty.target
 %{_unitdir}/multi-user.target.wants/systemd-logind.service
 %{_unitdir}/multi-user.target.wants/systemd-user-sessions.service
@@ -658,7 +668,7 @@
 %{_unitdir}/tmp.mount
 %{_unitdir}/umount.target
 %{_unitdir}/usb-gadget.target
-%{_unitdir}/user-.slice.d
+%dir %{_unitdir}/user-.slice.d
 %{_unitdir}/user-.slice.d/10-defaults.conf
 %{_unitdir}/user-runtime-dir@.service
 %{_unitdir}/user.slice
