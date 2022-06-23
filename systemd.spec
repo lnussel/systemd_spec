@@ -18,20 +18,33 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%if 0%{?_build_in_place}
+# for obs service set_version
+%define version_unconverted unset
+
+%if "%{?version_unconverted}" != "unset"
+%define systemd_version    %{nil}
+%define systemd_release    0
+%define archive_version    %{nil}
+%define systemd_major      %{sub %version_unconverted 1 3}
+%else
+%if 0%{?_build_in_place} || %{defined version_override}
+%define gitrev %(git log '-n1' '--date=format:%%Y%%m%%d.%%H%%M%%S' '--no-show-signature' "--pretty=format:+git%%cd.%%h")
 # Allow users to specify the version and the release when building the rpm in
 # place. When not provided we look for the version in meson.version (introduced
 # in v256).
-%define systemd_version    %{?version_override}%{!?version_override:%(cat meson.version)}
+%define systemd_version    %{?version_override}%{!?version_override:%(cat meson.version)%{?gitrev}}
 %define systemd_release    %{?release_override}%{!?release_override:0}
 %define archive_version    %{nil}
+%define systemd_major      %{sub %systemd_version 1 3}
 %else
-%define systemd_version    255.4
+# Fallback required for OBS source validator
+# source service leaves version line alone if it's a macro
+%define systemd_version    256
 %define systemd_release    0
 %define archive_version    +suse.22.g56b53b17bc
-%endif
-
 %define systemd_major      %{sub %systemd_version 1 3}
+%endif
+%endif
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -142,6 +155,9 @@ BuildRequires:  pam-devel
 BuildRequires:  python3-Jinja2
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
+%if 0%{?_build_in_place}
+BuildRequires:  git-core
+%endif
 
 %if %{with bootstrap}
 #!BuildIgnore:  dbus-1
@@ -192,7 +208,7 @@ Provides:       systemd-analyze = %{version}-%{release}
 Obsoletes:      pm-utils <= 1.4.1
 Obsoletes:      suspend <= 1.0
 Obsoletes:      systemd-analyze < 201
-Source0:        systemd-v%{version}%{archive_version}.tar.xz
+Source0:        systemd-%{version}.tar
 Source1:        systemd-rpmlintrc
 Source2:        systemd-user
 Source3:        systemd-update-helper
@@ -761,7 +777,7 @@ for the C APIs.
 %endif
 
 %prep
-%autosetup -p1 -n systemd-v%{version}%{archive_version}
+%autosetup -p1
 
 %build
 %meson \
