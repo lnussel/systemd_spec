@@ -199,6 +199,7 @@
 %{_mandir}/man3/sd_bus_emit_signalv.3.gz
 %{_mandir}/man3/sd_bus_enqueue_for_read.3.gz
 %{_mandir}/man3/sd_bus_error.3.gz
+%{_mandir}/man3/sd_bus_error_setfv.3.gz
 %{_mandir}/man3/sd_bus_error_add_map.3.gz
 %{_mandir}/man3/sd_bus_error_copy.3.gz
 %{_mandir}/man3/sd_bus_error_free.3.gz
@@ -316,6 +317,7 @@
 %{_mandir}/man3/sd_bus_message_read_array.3.gz
 %{_mandir}/man3/sd_bus_message_read_basic.3.gz
 %{_mandir}/man3/sd_bus_message_read_strv.3.gz
+%{_mandir}/man3/sd_bus_message_read_strv_extend.3.gz
 %{_mandir}/man3/sd_bus_message_readv.3.gz
 %{_mandir}/man3/sd_bus_message_ref.3.gz
 %{_mandir}/man3/sd_bus_message_rewind.3.gz
@@ -534,6 +536,7 @@
 %{_mandir}/man3/sd_hwdb_enumerate.3.gz
 %{_mandir}/man3/sd_hwdb_get.3.gz
 %{_mandir}/man3/sd_hwdb_new.3.gz
+%{_mandir}/man3/sd_hwdb_new_from_path.3.gz
 %{_mandir}/man3/sd_hwdb_ref.3.gz
 %{_mandir}/man3/sd_hwdb_seek.3.gz
 %{_mandir}/man3/sd_hwdb_unref.3.gz
@@ -550,6 +553,7 @@
 %{_mandir}/man3/sd_id128_is_allf.3.gz
 %{_mandir}/man3/sd_id128_is_null.3.gz
 %{_mandir}/man3/sd_id128_randomize.3.gz
+%{_mandir}/man3/sd_id128_string_equal.3.gz
 %{_mandir}/man3/sd_id128_t.3.gz
 %{_mandir}/man3/sd_id128_to_string.3.gz
 %{_mandir}/man3/sd_id128_to_uuid_string.3.gz
