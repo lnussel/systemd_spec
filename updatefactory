@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+rev="$1"
+[ -n "$rev" ]
+rev2="${2:-$1}"
+: "${prj:=openSUSE:Factory}"
+tagpfx="${prj,,}"
+tagpfx="${tagpfx//[^a-z0-9]/_}"
+
+for ((r="$rev"; r<="$rev2"; ++r)); do
+	files=("systemd.spec" "systemd-update-helper" "triggers.systemd" "systemd-user" $(osc api /source/$prj/systemd/?rev=$r|sed -ne '/files\./s/.*name="\([^"]*\)".*/\1/p'))
+	for f in "${files[@]}"; do
+		osc api "/source/$prj/systemd/$f?rev=$r" > "$f"
+	done
+	s=$(git status -s -uno)
+	[ -n "$s" ] || continue
+
+	echo "$s"
+	for f in "${files[@]}"; do
+		git add "$f"
+	done
+	git commit -m "$r - $prj"
+	git tag "$tagpfx-$r"
+done
