@@ -1,0 +1,14 @@
+#!/bin/bash -e
+KEYID="rpm@$HOSTNAME"
+export GNUPGHOME="$PWD/.gpg"
+if [ ! -d .gpg ]; then
+	install -d -m 700 .gpg
+	gpg --batch --passphrase '' --quick-gen-key "$KEYID" rsa1024 sign
+fi
+rm -rf RPMS
+"${0%/*}"/bb "$@"
+rpmsign --define "%_gpg_name $KEYID" --addsign RPMS/*/*.rpm
+rm -f RPMS/repodata/repomd.xml.asc
+createrepo_c RPMS/
+gpg -b -u "$KEYID" -o RPMS/repodata/repomd.xml.asc RPMS/repodata/repomd.xml
+gpg --export --export-options export-minimal -a "$KEYID" > RPMS/repodata/repomd.xml.key
