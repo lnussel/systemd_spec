@@ -1,0 +1,2 @@
+#!/bin/bash
+exec ./b --short-circuit -bc
