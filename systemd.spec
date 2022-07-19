@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.21.ge9fc337d97
+%define suse_version +suse.18.g949d6bb720
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -156,7 +156,7 @@ Provides:       systemd-analyze = %{version}-%{release}
 Obsoletes:      pm-utils <= 1.4.1
 Obsoletes:      suspend <= 1.0
 Obsoletes:      systemd-analyze < 201
-Source0:        systemd-v%{version}%{archive_version}.tar.xz
+Source0:        systemd-v%{version}%{suse_version}.tar.xz
 Source1:        systemd-rpmlintrc
 Source2:        systemd-user
 %if %{with sysvcompat}
@@ -628,7 +628,7 @@ Components that turn out to be stable and considered as fully
 supported will be merged into the main package or moved into a
 dedicated package.
 
-The package contains: homed, repart, userdbd.
+The package contains: homed, pstore, repart, userdbd.
 
 Have fun with these services at your own risk.
 %endif
@@ -638,12 +638,12 @@ Have fun with these services at your own risk.
 %endif
 
 %prep
-%autosetup -p1 -n systemd-v%{version}%{archive_version}
+%autosetup -p1 -n systemd-v%{version}%{suse_version}
 
 %build
 %meson \
         -Dmode=release \
-        -Dversion-tag=%{version}%{archive_version} \
+        -Dversion-tag=%{version}%{suse_version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
         -Drootprefix=/usr \
@@ -681,8 +681,6 @@ Have fun with these services at your own risk.
         -Doomd=false \
         -Dsmack=false \
         \
-        -Dpstore=true \
-        \
         -Dapparmor=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
@@ -706,13 +704,7 @@ Have fun with these services at your own risk.
         \
         -Dgnu-efi=%{when sd_boot} \
         -Dkernel-install=%{when sd_boot} \
-        \
-        -Dsbat-distro="%{?sbat_distro}" \
-        -Dsbat-distro-summary="%{?sbat_distro_summary}" \
-        -Dsbat-distro-url="%{?sbat_distro_url}" \
-        \
-        -Dsbat-distro-pkgname="%{name}" \
-        -Dsbat-distro-version="%{version}-%{release}" \
+        -Dsbat-distro= \
         \
         -Ddefault-dnssec=no \
         -Ddns-servers='' \
@@ -720,6 +712,7 @@ Have fun with these services at your own risk.
         -Dresolve=%{when resolved} \
         \
         -Dhomed=%{when experimental} \
+        -Dpstore=%{when experimental} \
         -Drepart=%{when experimental} \
         -Duserdb=%{when experimental} \
         \
@@ -1008,8 +1001,8 @@ systemctl daemon-reexec || :
 # systemctl kill --kill-who=main --signal=SIGRTMIN+25 "user@*.service" || :
 
 if [ "$1" -eq 1 ]; then
-        # Persistent journal is the default
-        mkdir -p %{_localstatedir}/log/journal
+	# Persistent journal is the default
+	mkdir -p %{_localstatedir}/log/journal
 fi
 
 %journal_catalog_update
@@ -1083,25 +1076,19 @@ fi
 # Avoid restarting logind until fixed upstream (issue #1163)
 
 %pre -n udev%{?mini}
-%systemd_pre remote-cryptsetup.target
-%systemd_pre systemd-pstore.service
-
 # New installations uses the last compat symlink generation number
 # (currently at 2), which basically disables all compat symlinks. On
 # old systems, the file doesn't exist. This is equivalent to
 # generation #1, which enables the creation of all compat symlinks.
 if [ $1 -eq 1 ]; then
-        echo "COMPAT_SYMLINK_GENERATION=2" >/usr/lib/udev/compat-symlink-generation
+	echo "COMPAT_SYMLINK_GENERATION=2" >/usr/lib/udev/compat-symlink-generation
 fi
 
 %post -n udev%{?mini}
 %regenerate_initrd_post
 %udev_hwdb_update
 
-%tmpfiles_create systemd-pstore.conf
-
 %systemd_post remote-cryptsetup.target
-%systemd_post systemd-pstore.service
 
 # add KERNEL name match to existing persistent net rules
 sed -ri '/KERNEL/ ! { s/NAME="(eth|wlan|ath)([0-9]+)"/KERNEL=="\1*", NAME="\1\2"/}' \
@@ -1110,10 +1097,6 @@ sed -ri '/KERNEL/ ! { s/NAME="(eth|wlan|ath)([0-9]+)"/KERNEL=="\1*", NAME="\1\2"
 # cleanup old stuff
 rm -f /etc/sysconfig/udev
 rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
-
-%preun -n udev%{?mini}
-%systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
-%systemd_preun systemd-pstore.service
 
 %postun -n udev%{?mini}
 %regenerate_initrd_post
@@ -1131,8 +1114,7 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 # Note that when systemd-udevd is restarted, there will always be a short time
 # frame where no socket will be listening to the events sent by the kernel, no
 # matter if the socket unit is restarted in first or not.
-%systemd_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
-%systemd_postun systemd-pstore.service
+%service_del_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
 
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
@@ -1264,18 +1246,23 @@ fi
 
 %if %{with experimental}
 %pre experimental
+%service_add_pre systemd-pstore.service
 %service_add_pre systemd-userdbd.service systemd-userdbd.socket
 %service_add_pre systemd-homed.service
 
 %post experimental
+%tmpfiles_create systemd-pstore.conf
+%service_add_post systemd-pstore.service
 %service_add_post systemd-userdbd.service systemd-userdbd.socket
 %service_add_post systemd-homed.service
 
 %preun experimental
+%service_del_preun systemd-pstore.service
 %service_del_preun systemd-userdbd.service systemd-userdbd.socket
 %service_del_preun systemd-homed.service
 
 %postun experimental
+%service_del_postun systemd-pstore.service
 %service_del_postun systemd-userdbd.service systemd-userdbd.socket
 %service_del_postun systemd-homed.service
 %endif
@@ -1409,6 +1396,11 @@ fi
 %if %{with experimental}
 %files experimental
 %defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/systemd/pstore.conf
+%{_prefix}/lib/systemd/systemd-pstore
+%{_unitdir}/systemd-pstore.service
+%{_tmpfilesdir}/systemd-pstore.conf
+%{_mandir}/man*/*pstore*
 %{_bindir}/systemd-repart
 %{_unitdir}/systemd-repart.service
 %{_mandir}/man*/*repart*
