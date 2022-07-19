@@ -178,6 +178,7 @@ Source203:      files.network
 Source204:      files.devel
 Source205:      files.sysvcompat
 Source206:      files.uefi-boot
+Source207:      files.experimental
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -1409,37 +1410,7 @@ fi
 %if %{with experimental}
 %files experimental
 %defattr(-,root,root)
-%{_bindir}/systemd-repart
-%{_unitdir}/systemd-repart.service
-%{_mandir}/man*/*repart*
-%{_bindir}/userdbctl
-%{_prefix}/lib/systemd/systemd-userwork
-%{_prefix}/lib/systemd/systemd-userdbd
-%{_systemd_util_dir}/system/initrd-root-fs.target.wants/systemd-repart.service
-%{_systemd_util_dir}/system/sysinit.target.wants/systemd-repart.service
-%{_unitdir}/systemd-userdbd.service
-%{_unitdir}/systemd-userdbd.socket
-%{_mandir}/man*/userdbctl*
-%{_mandir}/man*/systemd-userdbd*
-%config(noreplace) %{_sysconfdir}/systemd/homed.conf
-%{_bindir}/homectl
-%{_prefix}/lib/systemd/systemd-homed
-%{_prefix}/lib/systemd/systemd-homework
-%{_unitdir}/systemd-homed.service
-%{_unitdir}/systemd-homed-activate.service
-%{_pam_moduledir}/pam_systemd_home.so
-%{_datadir}/dbus-1/interfaces/org.freedesktop.home1.Home.xml
-%{_datadir}/dbus-1/interfaces/org.freedesktop.home1.Manager.xml
-%{_datadir}/dbus-1/interfaces/org.freedesktop.portable1.Image.xml
-%{_datadir}/dbus-1/interfaces/org.freedesktop.portable1.Manager.xml
-%{_datadir}/dbus-1/system-services/org.freedesktop.home1.service
-%{_datadir}/dbus-1/system.d/org.freedesktop.home1.conf
-%{_datadir}/polkit-1/actions/org.freedesktop.home1.policy
-%{_datadir}/bash-completion/completions/homectl
-%{_mandir}/man*/*homectl*
-%{_mandir}/man*/*homed*
-%{_mandir}/man*/org.freedesktop.home1*
-%{_mandir}/man*/pam_systemd_home*
+%include %{SOURCE207}
 %endif
 
 %changelog
