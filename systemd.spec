@@ -704,7 +704,13 @@ Have fun with these services at your own risk.
         \
         -Dgnu-efi=%{when sd_boot} \
         -Dkernel-install=%{when sd_boot} \
-        -Dsbat-distro= \
+        \
+        -Dsbat-distro="%{?sbat_distro}" \
+        -Dsbat-distro-summary="%{?sbat_distro_summary}" \
+        -Dsbat-distro-url="%{?sbat_distro_url}" \
+        \
+        -Dsbat-distro-pkgname="%{name}" \
+        -Dsbat-distro-version="%{version}-%{release}" \
         \
         -Ddefault-dnssec=no \
         -Ddns-servers='' \
@@ -1001,8 +1007,8 @@ systemctl daemon-reexec || :
 # systemctl kill --kill-who=main --signal=SIGRTMIN+25 "user@*.service" || :
 
 if [ "$1" -eq 1 ]; then
-	# Persistent journal is the default
-	mkdir -p %{_localstatedir}/log/journal
+        # Persistent journal is the default
+        mkdir -p %{_localstatedir}/log/journal
 fi
 
 %journal_catalog_update
@@ -1081,7 +1087,7 @@ fi
 # old systems, the file doesn't exist. This is equivalent to
 # generation #1, which enables the creation of all compat symlinks.
 if [ $1 -eq 1 ]; then
-	echo "COMPAT_SYMLINK_GENERATION=2" >/usr/lib/udev/compat-symlink-generation
+        echo "COMPAT_SYMLINK_GENERATION=2" >/usr/lib/udev/compat-symlink-generation
 fi
 
 %post -n udev%{?mini}
