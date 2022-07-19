@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define suse_version +suse.21.ge9fc337d97
+%define archive_version +suse.21.ge9fc337d97
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -156,7 +156,7 @@ Provides:       systemd-analyze = %{version}-%{release}
 Obsoletes:      pm-utils <= 1.4.1
 Obsoletes:      suspend <= 1.0
 Obsoletes:      systemd-analyze < 201
-Source0:        systemd-v%{version}%{suse_version}.tar.xz
+Source0:        systemd-v%{version}%{archive_version}.tar.xz
 Source1:        systemd-rpmlintrc
 Source2:        systemd-user
 %if %{with sysvcompat}
@@ -638,12 +638,12 @@ Have fun with these services at your own risk.
 %endif
 
 %prep
-%autosetup -p1 -n systemd-v%{version}%{suse_version}
+%autosetup -p1 -n systemd-v%{version}%{archive_version}
 
 %build
 %meson \
         -Dmode=release \
-        -Dversion-tag=%{version}%{suse_version} \
+        -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
         -Drootprefix=/usr \
