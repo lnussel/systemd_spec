@@ -674,6 +674,10 @@
 %{_unitdir}/user-runtime-dir@.service
 %{_unitdir}/user.slice
 %{_unitdir}/user@.service
+%dir %{_unitdir}/user@.service.d
+%{_unitdir}/user@.service.d/10-login-barrier.conf
+%dir %{_unitdir}/user@0.service.d
+%{_unitdir}/user@0.service.d/10-login-barrier.conf
 %{xinitconfdir}/xinitrc.d/50-systemd-user.sh
 %if %{with split_usr}
 /bin/systemctl
