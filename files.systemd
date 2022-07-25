@@ -494,6 +494,7 @@
 %{_sysusersdir}/systemd-journal.conf
 %{_sysusersdir}/systemd-timesync.conf
 %{_tmpfilesdir}/journal-nocow.conf
+%{_tmpfilesdir}/provision.conf
 %{_tmpfilesdir}/suse.conf
 %{_tmpfilesdir}/systemd-nologin.conf
 %{_tmpfilesdir}/systemd-tmp.conf
