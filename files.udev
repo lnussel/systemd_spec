@@ -181,6 +181,7 @@
 %{_systemd_util_dir}/systemd-veritysetup
 %endif
 %{_systemd_util_dir}/systemd-volatile-root
+%{_systemd_util_dir}/systemd-sysroot-fstab-check
 %if %{without bootstrap}
 %{_systemdgeneratordir}/systemd-cryptsetup-generator
 %endif
