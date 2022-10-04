@@ -66,7 +66,12 @@
 %bcond_with     sd_boot
 %endif
 %bcond_without  selinux
+%bcond_without  downstream_build
+%if %{with downstream_build}
 %bcond_without  sysvcompat
+%else
+%bcond_with     sysvcompat
+%endif
 %bcond_without  experimental
 %bcond_without  testsuite
 %bcond_without  html
@@ -196,11 +201,13 @@ Source4:        systemd-sysv-install
 %endif
 Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
+%if %{with downstream_build}
 Source7:        triggers.systemd
 Source14:       kbd-model-map.legacy
 
 Source100:      fixlet-container-post.sh
 Source101:      fixlet-systemd-post.sh
+%endif
 
 Source200:      files.systemd
 Source201:      files.udev
@@ -226,6 +233,7 @@ Source213:      files.devel-doc
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
+%if %{with downstream_build}
 Patch:          0001-Drop-support-for-efivar-SystemdOptions.patch
 Patch:          0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
@@ -241,6 +249,8 @@ Patch:          0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch:          5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
 Patch:          5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
+%endif
+# /downstream_build
 %endif
 
 %description
@@ -901,12 +911,14 @@ install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-inst
 # Drop-ins are currently not supported by udev.
 mv %{buildroot}%{_prefix}/lib/udev/udev.conf %{buildroot}%{_sysconfdir}/udev/
 
+%if %{with downstream_build}
 # Install the fixlets
 mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 %if %{with machined}
 install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
 install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
+%endif
 
 # Make sure /usr/lib/modules-load.d exists in udev(-mini)?, so other
 # packages can install modules without worry
@@ -1045,9 +1057,11 @@ install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/systemd-suse.conf
 # consume those configs (like glibc or pam), see bsc#1170146.
 rm -fr %{buildroot}%{_datadir}/factory/*
 
+%if %{with downstream_build}
 # kbd-model-map.legacy is used to provide mapping for legacy keymaps, which may
 # still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
+%endif
 
 %if %{with testsuite}
 # -Dinstall_test took care of installing the unit tests only (those in
@@ -1076,6 +1090,7 @@ rm -fr %{buildroot}%{_docdir}/systemd
 # installation images uses a hardcoded list of packages with a %%pre that needs
 # to be run during the build and complains if it can't find one.
 %pre
+%if %{with downstream_build}
 # We don't really need to enable these units explicitely since during
 # installation `systemctl preset-all` is executed at the end of the install
 # transaction by the branding preset package. However it might be needed when
@@ -1385,6 +1400,7 @@ fi
 # File trigger definitions
 %if %{with filetriggers}
 %include %{SOURCE7}
+%endif
 %endif
 
 %files
