@@ -887,23 +887,21 @@ echo 'disable *' >%{buildroot}%{_userpresetdir}/99-default.preset
 # The tmpfiles dealing with the generic paths is pretty messy
 # currently because:
 #
-#  1. filesystem package wants to define the generic paths and some of
-#     them conflict with the definition given by systemd in var.conf,
-#     see bsc#1078466.
+#  1. filesystem package wants to define the generic paths and some of them
+#     conflict with the definition given by systemd in var.conf, see
+#     bsc#1078466.
 #
-#  2. /tmp and /var/tmp are not cleaned by default on SUSE distros
-#     (fate#314974) which conflict with tmp.conf.
+#  2. /tmp and /var/tmp are not cleaned by default on SUSE distros (fate#314974)
+#     which conflict with tmp.conf.
 #
-#  3. There're also legacy.conf which defines various legacy paths
-#     which either don't match the SUSE defaults or don't look needed
-#     at all.
+#  3. There're also legacy.conf which defines various legacy paths which either
+#     don't match the SUSE defaults or don't look needed at all.
 #
-#  4. And to finish, we don't want the part in etc.conf which imports
-#     default upstream files in empty /etc, see below.
+#  4. We don't want the part in etc.conf which imports default upstream files in
+#     empty /etc, see below.
 #
-# To keep things simple, we remove all these tmpfiles config files but
-# still keep the remaining paths that still don't have a better home
-# in suse.conf.
+# To keep things simple, we remove all these tmpfiles config files but still
+# keep the remaining paths that still don't have a better home in suse.conf.
 rm -f %{buildroot}%{_tmpfilesdir}/{etc,home,legacy,tmp,var}.conf
 install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
 
@@ -1062,22 +1060,6 @@ fi
 #
 # It's run only once.
 %{_prefix}/lib/systemd/scripts/migrate-sysconfig-i18n.sh || :
-
-# During the migration to tmpfs for /tmp, a bug was introduced that
-# affected users using tmpfs for /tmp and happened during the _second_
-# update following the one that introduced tmpfs on /tmp. It consisted
-# in creating a dangling symlink /etc/systemd/system/tmp.mount
-# pointing to the old copy that previous versions shipped in
-# /usr/share/systemd, which doesn't exist anymore. So we migrate the
-# link to the new location.
-#
-# Users have been exposed to this bug during a short period of time as
-# it was present only in one release and was fixed shortly after by
-# the next update. So we can assume that it's safe to drop it in 6
-# months (ie March 2021).
-if [ "$(readlink -f %{_sysconfdir}/systemd/system/tmp.mount)" = "%{_datadir}/systemd/tmp.mount" ] ; then
-        ln -sf %{_unitdir}/tmp.mount %{_sysconfdir}/systemd/system/tmp.mount
-fi
 
 %postun
 # daemon-reload is implied by %%systemd_postun_with_restart
