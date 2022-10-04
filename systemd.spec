@@ -1272,6 +1272,28 @@ fi
 %service_del_postun systemd-portabled.service
 %endif
 
+%if %{with experimental}
+%pre experimental
+%service_add_pre systemd-homed.service
+%service_add_pre systemd-oomd.service systemd-oomd.socket
+%service_add_pre systemd-userdbd.service systemd-userdbd.socket
+
+%post experimental
+%service_add_post systemd-homed.service
+%service_add_post systemd-oomd.service systemd-oomd.socket
+%service_add_post systemd-userdbd.service systemd-userdbd.socket
+
+%preun experimental
+%service_del_preun systemd-homed.service
+%service_del_preun systemd-oomd.service systemd-oomd.socket
+%service_del_preun systemd-userdbd.service systemd-userdbd.socket
+
+%postun experimental
+%service_del_postun systemd-homed.service
+%service_del_postun systemd-oomd.service systemd-oomd.socket
+%service_del_postun systemd-userdbd.service systemd-userdbd.socket
+%endif
+
 %files
 %defattr(-,root,root)
 %include %{SOURCE200}
