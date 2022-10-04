@@ -69,6 +69,7 @@
 %bcond_without  sysvcompat
 %bcond_without  experimental
 %bcond_without  testsuite
+%bcond_without  html
 %endif
 
 %bcond_with upstream
@@ -812,7 +813,7 @@ for the C APIs.
         -Dfdisk=%{when_not bootstrap} \
         -Dgcrypt=%{when_not bootstrap} \
         -Dgnutls=%{when_not bootstrap} \
-        -Dhtml=%{when_not bootstrap} \
+        -Dhtml=%{when html} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
         -Dlibfido2=%{when_not bootstrap} \
