@@ -661,6 +661,7 @@ Have fun with these services at your own risk.
         -Dsplit-bin=true \
         -Dsystem-uid-max=499 \
         -Dsystem-gid-max=499 \
+        -Dclock-valid-range-usec-max=946728000000000 \
         -Dadm-group=false \
         -Dwheel-group=false \
         -Ddefault-hierarchy=unified \
