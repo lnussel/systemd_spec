@@ -153,6 +153,10 @@ Provides:       sbin_init
 Provides:       sysvinit:/sbin/init
 Conflicts:      sbin_init
 Conflicts:      sysvinit
+Obsoletes:      nss-systemd < %{version}-%{release}
+Provides:       nss-systemd = %{version}-%{release}
+Obsoletes:      nss-myhostname < %{version}-%{release}
+Provides:       nss-myhostname = %{version}-%{release}
 Provides:       systemd-logger = %{version}-%{release}
 Obsoletes:      systemd-logger < %{version}-%{release}
 Provides:       systemd-sysvinit = %{version}-%{release}
@@ -470,34 +474,6 @@ More information can be found online:
 
 http://0pointer.net/blog/walkthrough-for-portable-services.html
 https://systemd.io/PORTABLE_SERVICES
-%endif
-
-%if %{without bootstrap}
-%package -n nss-systemd
-Summary:        Plugin for local virtual host name resolution
-License:        LGPL-2.1-or-later
-
-%description -n nss-systemd
-This package contains a plugin for the Name Service Switch (NSS),
-which enables resolution of all dynamically allocated service
-users. (See the DynamicUser= setting in unit files.)
-
-To activate this NSS module, you will need to include it in
-/etc/nsswitch.conf, see nss-systemd(8) manpage for more details.
-
-%package -n nss-myhostname
-Summary:        Plugin for local system host name resolution
-License:        LGPL-2.1-or-later
-
-%description -n nss-myhostname
-This package contains a plug-in module for the Name Service Switch
-(NSS), primarly providing hostname resolution for the locally
-configured system hostname as returned by gethostname(2). For example,
-it resolves the local hostname to locally configured IP addresses, as
-well as "localhost" to 127.0.0.1/::1.
-
-To activate this NSS module, you will need to include it in
-/etc/nsswitch.conf, see nss-hostname(8) manpage for more details.
 %endif
 
 %if %{with journal_remote}
@@ -1003,6 +979,8 @@ fi
 
 %if %{without bootstrap}
 pam-config --add --systemd || :
+# Run ldconfig for nss-systemd and nss-myhostname NSS modules.
+%ldconfig
 %endif
 
 # systemd-sysusers is not available in %pre so this needs to be done
@@ -1022,7 +1000,7 @@ systemctl daemon-reexec || :
 # only understood by the latest version of the user manager and the
 # user service is started before the user manager get reexecuted. But
 # this case is very unlikely especially since we don't restart any
-# user service for now on.
+# user service for now.
 #
 # Before doing this, we unfortunately have to wait until users will
 # reexec their user manager (by either rebooting or restarting their
@@ -1162,11 +1140,11 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
 
-%post -n libudev%{?mini}1 -p /sbin/ldconfig
-%post -n libsystemd0%{?mini} -p /sbin/ldconfig
+%post -n libudev%{?mini}1 -p %ldconfig
+%post -n libsystemd0%{?mini} -p %ldconfig
 
-%postun -n libudev%{?mini}1 -p /sbin/ldconfig
-%postun -n libsystemd0%{?mini} -p /sbin/ldconfig
+%postun -n libudev%{?mini}1 -p %ldconfig
+%postun -n libsystemd0%{?mini} -p %ldconfig
 
 %post container
 %tmpfiles_create systemd-nspawn.conf
@@ -1198,11 +1176,6 @@ fi
 %if %{with coredump}
 %post coredump
 %sysusers_create systemd-coredump.conf
-%endif
-
-%if %{without bootstrap}
-%ldconfig_scriptlets -n nss-myhostname
-%ldconfig_scriptlets -n nss-systemd
 %endif
 
 %if %{with journal_remote}
@@ -1378,18 +1351,6 @@ fi
 
 %if %{without bootstrap}
 %files lang -f systemd.lang
-
-%files -n nss-myhostname
-%defattr(-, root, root)
-%{_libdir}/*nss_myhostname*
-%{_mandir}/man8/libnss_myhostname.*
-%{_mandir}/man8/nss-myhostname.*
-
-%files -n nss-systemd
-%defattr(-, root, root)
-%{_libdir}/libnss_systemd.so*
-%{_mandir}/man8/libnss_systemd.so.*
-%{_mandir}/man8/nss-systemd.*
 %endif
 
 %if %{with journal_remote}
