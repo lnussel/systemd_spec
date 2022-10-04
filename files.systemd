@@ -44,7 +44,9 @@
 %dir %{_systemd_user_env_generator_dir}
 %dir %{_systemd_util_dir}
 %dir %{_systemd_util_dir}/ntp-units.d
+%if %{with downstream_build}
 %dir %{_systemd_util_dir}/rpm
+%endif
 %dir %{_systemd_util_dir}/system-preset
 %dir %{_systemd_util_dir}/system-shutdown
 %dir %{_systemd_util_dir}/user
@@ -407,7 +409,9 @@
 %{_systemd_user_env_generator_dir}/30-systemd-environment-d-generator
 %{_systemd_util_dir}/journald.conf
 %{_systemd_util_dir}/logind.conf
+%if %{with downstream_build}
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh
+%endif
 %{_systemd_util_dir}/system-preset/99-default.preset
 %{_systemd_util_dir}/system.conf
 %{_systemd_util_dir}/systemd
