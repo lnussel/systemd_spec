@@ -1279,6 +1279,7 @@ fi
 %service_add_pre systemd-userdbd.service systemd-userdbd.socket
 
 %post experimental
+%sysusers_create systemd-oom.conf
 %service_add_post systemd-homed.service
 %service_add_post systemd-oomd.service systemd-oomd.socket
 %service_add_post systemd-userdbd.service systemd-userdbd.socket
