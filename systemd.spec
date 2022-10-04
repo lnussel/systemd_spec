@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.27.g8cd784e925
+%define archive_version +suse.29.g532faa39eb
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -72,7 +72,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        251.3
+Version:        251.4
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -206,7 +206,6 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 
 # Temporary workaround until bsc#1197178 is addressed.
 Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
-Patch1001:      1001-statx.patch
 
 # Patches listed below are put in quarantine. Normally all changes
 # must go to upstream first and then are cherry-picked in the SUSE git
