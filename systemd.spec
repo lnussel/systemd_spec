@@ -67,6 +67,7 @@
 %bcond_without  sysvcompat
 %bcond_without  experimental
 %bcond_without  testsuite
+%bcond_without  html
 %endif
 
 %bcond_with upstream
@@ -802,7 +803,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dbpf-framework=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
-        -Dhtml=%{when_not bootstrap} \
+        -Dhtml=%{when html} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
         -Dkmod=%{when_not bootstrap} \
