@@ -206,6 +206,7 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 
 # Temporary workaround until bsc#1197178 is addressed.
 Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
+Patch1001:      1001-statx.patch
 
 # Patches listed below are put in quarantine. Normally all changes
 # must go to upstream first and then are cherry-picked in the SUSE git
