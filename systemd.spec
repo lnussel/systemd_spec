@@ -60,7 +60,12 @@
 %bcond_with     sd_boot
 %endif
 %bcond_without  selinux
+%bcond_without  downstream_build
+%if %{with downstream_build}
 %bcond_without  sysvcompat
+%else
+%bcond_with     sysvcompat
+%endif
 %bcond_without  experimental
 %bcond_without  testsuite
 %bcond_without  utmp
@@ -178,12 +183,14 @@ Source4:        systemd-sysv-install
 %endif
 Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
+%if %{with downstream_build}
 Source7:        triggers.systemd
 Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
 Source100:      fixlet-container-post.sh
 Source101:      fixlet-systemd-post.sh
+%endif
 
 Source200:      files.systemd
 Source201:      files.udev
@@ -206,6 +213,7 @@ Source210:      files.lang
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
+%if %{with downstream_build}
 Patch2:         0001-conf-parser-introduce-early-drop-ins.patch
 Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
@@ -219,6 +227,9 @@ Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # worked around quickly. In these cases, the patches are added temporarily and
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
+
+# /downstream_build
+%endif
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
@@ -821,17 +832,22 @@ rm %{buildroot}%{_mandir}/man1/resolvconf.1*
 install -m0755 -D %{SOURCE3} %{buildroot}/%{_systemd_util_dir}/systemd-update-helper
 %if %{with sysvcompat}
 install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
+%else
+# XXX: bug upstream installing manpage even when disabled
+rm %{buildroot}%{_mandir}/man8/systemd-update-utmp-runlevel.service.8
 %endif
 
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/nspawn
 
+%if %{with downstream_build}
 # Install the fixlets
 mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 %if %{with machined}
 install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
 install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
+%endif
 
 %if %{with split_usr}
 mkdir -p %{buildroot}/{bin,sbin}
@@ -935,8 +951,10 @@ mkdir -p %{buildroot}%{_systemd_system_env_generator_dir}
 mkdir -p %{buildroot}%{_systemd_user_env_generator_dir}
 
 # Ensure after.local wrapper is called.
+%if %{with downstream_build}
 install -m 644 %{SOURCE11} %{buildroot}%{_unitdir}/
 ln -s ../after-local.service %{buildroot}%{_unitdir}/multi-user.target.wants/
+%endif
 
 # ghost directories with default permissions.
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
@@ -983,6 +1001,7 @@ install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
 # consume those configs (like glibc or pam), see bsc#1170146.
 rm -fr %{buildroot}%{_datadir}/factory/*
 
+%if %{with downstream_build}
 # Add entries for xkeyboard-config converted keymaps; mappings, which already
 # exist in original systemd mapping table are being ignored though, i.e. not
 # overwritten; needed as long as YaST uses console keymaps internally and calls
@@ -998,6 +1017,7 @@ fi
 # kbd-model-map.legacy is used to provide mapping for legacy keymaps, which may
 # still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
+%endif
 
 %if %{with testsuite}
 # -Dinstall_test took care of installing the unit tests only (those in
@@ -1025,6 +1045,7 @@ rm -fr %{buildroot}%{_docdir}/systemd
 # installation images uses a hardcoded list of packages with a %%pre that needs
 # to be run during the build and complains if it can't find one.
 %pre
+%if %{with downstream_build}
 if [ $1 -gt 1 ]; then
         # We keep these just in case we're upgrading from an old version that
         # was missing one of these units. During package installation, these
@@ -1303,6 +1324,8 @@ fi
 # File trigger definitions
 %if %{with filetriggers}
 %include %{SOURCE7}
+%endif
+# /downstream_build
 %endif
 
 %files

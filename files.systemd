@@ -43,7 +43,9 @@
 %dir %{_systemd_user_env_generator_dir}
 %dir %{_systemd_util_dir}
 %dir %{_systemd_util_dir}/ntp-units.d
+%if %{with downstream_build}
 %dir %{_systemd_util_dir}/rpm
+%endif
 %dir %{_systemd_util_dir}/system-preset
 %dir %{_systemd_util_dir}/system-shutdown
 %dir %{_systemd_util_dir}/user
@@ -402,7 +404,9 @@
 %{_sysconfdir}/xdg/systemd/user
 %{_sysctldir}/99-sysctl.conf
 %{_systemd_user_env_generator_dir}/30-systemd-environment-d-generator
+%if %{with downstream_build}
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh
+%endif
 %{_systemd_util_dir}/system-preset/99-default.preset
 %{_systemd_util_dir}/systemd
 %{_systemd_util_dir}/systemd-binfmt
@@ -472,7 +476,9 @@
 %{_udevrulesdir}/71-seat.rules
 %{_udevrulesdir}/73-seat-late.rules
 %{_udevrulesdir}/99-systemd.rules
+%if %{with downstream_build}
 %{_unitdir}/after-local.service
+%endif
 %{_unitdir}/autovt@.service
 %{_unitdir}/basic.target
 %{_unitdir}/blockdev@.target
@@ -515,7 +521,9 @@
 %{_unitdir}/local-fs.target.wants/tmp.mount
 %{_unitdir}/modprobe@.service
 %{_unitdir}/multi-user.target
+%if %{with downstream_build}
 %{_unitdir}/multi-user.target.wants/after-local.service
+%endif
 %{_unitdir}/multi-user.target.wants/getty.target
 %{_unitdir}/multi-user.target.wants/systemd-logind.service
 %{_unitdir}/multi-user.target.wants/systemd-user-sessions.service
