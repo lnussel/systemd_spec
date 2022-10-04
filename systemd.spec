@@ -64,6 +64,7 @@
 %bcond_without  experimental
 %bcond_without  testsuite
 %bcond_without  utmp
+%bcond_without  html
 %endif
 
 # The following features are kept to ease migrations toward SLE. Their default
@@ -755,7 +756,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dbpf-framework=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
-        -Dhtml=%{when_not bootstrap} \
+        -Dhtml=%{when html} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
         -Dlibcryptsetup-plugins=%{when_not bootstrap} \
