@@ -623,23 +623,37 @@ BuildRequires:  pkgconfig(fdisk)
 BuildRequires:  pkgconfig(openssl)
 
 %description experimental
-This package contains optional extra services that are considered as
-previews and are provided so users can do early experiments with the
-new features or technologies without waiting for them to be fully
-supported by either upstream and openSUSE.
+This package contains optional extra services that are considered as previews
+and are provided so users can do early experiments with the new features or
+technologies without waiting for them to be fully supported by either upstream
+and openSUSE.
 
-Please note that all services should be considered in development
-phase and as such their behaviors details, unit files, option names,
-etc... are subject to change without the usual backwards-compatibility
-promises.
+Please note that all services should be considered in development phase and as
+such their behaviors details, unit files, option names, etc... are subject to
+change without the usual backwards-compatibility promises.
 
-Components that turn out to be stable and considered as fully
-supported will be merged into the main package or moved into a
-dedicated package.
+Components that turn out to be stable and considered as fully supported will be
+merged into the main package or moved into a dedicated package.
 
-The package contains: homed, repart, userdbd, oomd.
+Currently this package contains: homed, repart, userdbd, oomd.
 
-Have fun with these services at your own risk.
+In case you want to create a user with systemd-homed quickly, here are the steps
+you can follow:
+
+ - Make sure the nss-systemd package is installed and added into
+   /etc/nsswitch.conf, see nss-systemd(8) man page for details
+
+ - Integrate pam_systemd_home.so in your PAM stack. You can do that either by
+   following the instructions in pam_systemd_home(8) man page or by executing
+   `pam-config --add --systemd_home` command
+
+ - Enable and start systemd-homed with `systemctl enable --now systemd-homed`
+
+ - Create a user with `homectl create <username>`
+
+ - Verify the previous steps with `getent passwd <username>`
+
+Have fun (at your own risk).
 %endif
 
 %if %{without bootstrap}
