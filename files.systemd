@@ -73,6 +73,8 @@
 %dir %{_unitdir}/sockets.target.wants
 %dir %{_unitdir}/sysinit.target.wants
 %dir %{_unitdir}/timers.target.wants
+%dir %{_unitdir}/user@.service.d
+%dir %{_unitdir}/user@0.service.d
 %dir %{xinitconfdir}
 %dir %{xinitconfdir}/xinitrc.d
 %doc %{_modprobedir}/README
@@ -663,6 +665,8 @@
 %{_unitdir}/user-runtime-dir@.service
 %{_unitdir}/user.slice
 %{_unitdir}/user@.service
+%{_unitdir}/user@.service.d/10-login-barrier.conf
+%{_unitdir}/user@0.service.d/10-login-barrier.conf
 %{xinitconfdir}/xinitrc.d/50-systemd-user.sh
 %if %{with split_usr}
 /bin/systemctl
