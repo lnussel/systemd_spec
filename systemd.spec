@@ -78,6 +78,8 @@ Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 %if %{without bootstrap}
+BuildRequires:  bpftool
+BuildRequires:  clang
 BuildRequires:  docbook-xsl-stylesheets
 BuildRequires:  kbd
 BuildRequires:  libapparmor-devel
@@ -88,6 +90,7 @@ BuildRequires:  polkit
 BuildRequires:  python3-base
 BuildRequires:  python3-lxml
 BuildRequires:  pkgconfig(audit)
+BuildRequires:  pkgconfig(libbpf)
 BuildRequires:  pkgconfig(libdw)
 BuildRequires:  pkgconfig(libiptc)
 BuildRequires:  pkgconfig(liblz4)
@@ -137,6 +140,8 @@ Requires:       util-linux >= 2.27.1
 Requires:       group(lock)
 # This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
 Recommends:     libpcre2-8-0
+Recommends:     libbpf0
+
 Requires(post): coreutils
 Requires(post): findutils
 Requires(post): systemd-presets-branding
@@ -688,6 +693,7 @@ Have fun with these services at your own risk.
         -Dpstore=true \
         \
         -Dapparmor=%{when_not bootstrap} \
+        -Dbpf-framework=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
         -Dhtml=%{when_not bootstrap} \
