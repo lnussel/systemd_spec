@@ -637,7 +637,7 @@ Components that turn out to be stable and considered as fully
 supported will be merged into the main package or moved into a
 dedicated package.
 
-The package contains: homed, repart, userdbd.
+The package contains: homed, repart, userdbd, oomd.
 
 Have fun with these services at your own risk.
 %endif
@@ -687,7 +687,6 @@ Have fun with these services at your own risk.
         -Dima=false \
         -Dldconfig=false \
         -Dlibcryptsetup-plugins=false \
-        -Doomd=false \
         -Dsmack=false \
         \
         -Dpstore=true \
@@ -729,6 +728,7 @@ Have fun with these services at your own risk.
         -Dresolve=%{when resolved} \
         \
         -Dhomed=%{when experimental} \
+        -Doomd=%{when experimental} \
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
         -Duserdb=%{when experimental} \
