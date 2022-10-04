@@ -687,7 +687,6 @@ Have fun with these services at your own risk.
         -Dgshadow=false \
         -Dima=false \
         -Dldconfig=false \
-        -Dlibcryptsetup-plugins=false \
         -Dsmack=false \
         \
         -Dpstore=true \
@@ -697,6 +696,7 @@ Have fun with these services at your own risk.
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
         -Dhtml=%{when_not bootstrap} \
+        -Dlibcryptsetup-plugins=%{when_not bootstrap} \
         -Dman=%{when_not bootstrap} \
         -Dnss-myhostname=%{when_not bootstrap} \
         -Dnss-systemd=%{when_not bootstrap} \
