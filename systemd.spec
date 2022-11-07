@@ -987,9 +987,6 @@ pam-config --add --systemd || :
 %sysusers_create systemd-journal.conf
 %sysusers_create systemd-timesync.conf
 
-[ -e %{_localstatedir}/lib/random-seed ] && mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/ || :
-/usr/lib/systemd/systemd-random-seed save || :
-
 systemctl daemon-reexec || :
 
 # Reexecute user manager instances (if any). It is asynchronous but it
