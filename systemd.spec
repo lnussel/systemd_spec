@@ -1062,7 +1062,7 @@ fi
 %{_prefix}/lib/systemd/scripts/migrate-sysconfig-i18n.sh || :
 
 %postun
-# daemon-reload is implied by %%systemd_postun_with_restart
+# daemon-reload is implied by systemd_postun_with_restart
 %systemd_postun_with_restart systemd-journald.service
 %systemd_postun_with_restart systemd-timesyncd.service
 # Avoid restarting logind until fixed upstream (issue #1163)
