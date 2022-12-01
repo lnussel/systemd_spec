@@ -63,7 +63,6 @@
 %dir %{_unitdir}/halt.target.wants
 %dir %{_unitdir}/initrd-root-device.target.wants
 %dir %{_unitdir}/initrd-root-fs.target.wants
-%dir %{_unitdir}/initrd.target.wants
 %dir %{_unitdir}/kexec.target.wants
 %dir %{_unitdir}/local-fs.target.wants
 %dir %{_unitdir}/multi-user.target.wants
