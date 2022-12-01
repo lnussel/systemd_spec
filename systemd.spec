@@ -106,7 +106,7 @@ BuildRequires:  gperf
 BuildRequires:  libacl-devel
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel >= 2.27.1
-BuildRequires:  meson >= 0.43
+BuildRequires:  meson >= 0.53.2
 BuildRequires:  pam-devel
 BuildRequires:  python3-jinja2
 # regenerate_initrd_post macro is expanded during build, hence this BR. Also
@@ -211,12 +211,12 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 # Temporary workaround until bsc#1197178 is addressed.
 Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
 
-# Patches listed below are put in quarantine. Normally all changes
-# must go to upstream first and then are cherry-picked in the SUSE git
-# repository. But in very few cases, some stuff might be broken in
-# upstream and need an urgent fix. Even in this case, the patches are
-# temporary and should be removed as soon as a fix is merged by
-# upstream.
+# Patches listed below are put in quarantine. Normally all changes must go to
+# upstream first and then are cherry-picked in the SUSE git repository. But for
+# very few cases, some stuff might be broken in upstream and need to be fixed
+# quickly. But even in these cases, the patches are temporary and should be
+# removed as soon as a fix is merged by upstream.
+Patch6000:      6000-meson-install-test-kernel-install-only-when-Dkernel-.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
