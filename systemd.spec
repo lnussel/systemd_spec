@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.38.g9cdd785850
+%define archive_version +suse.21.g64dc546913
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -72,7 +72,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        251.8
+Version:        252.1
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -523,6 +523,7 @@ Requires:       binutils
 Requires:       busybox-static
 Requires:       cryptsetup
 Requires:       dosfstools
+Requires:       jq
 Requires:       libcap-progs
 Requires:       libfido2
 Requires:       libtss2-esys0
@@ -570,10 +571,10 @@ Run the following python script to run all unit tests at once:
 $ %{_testsuitedir}/run-unit-tests.py
 
 To run the full extended testsuite do the following:
-$ NO_BUILD=1 %{_testsuitedir}/test/run-integration-tests.sh
+$ NO_BUILD=1 TEST_NESTED_VM=1 %{_testsuitedir}/test/run-integration-tests.sh
 
 Or to run one specific integration test:
-$ NO_BUILD=1 make -C %{_testsuitedir}/test/TEST-01-BASIC clean setup run
+$ NO_BUILD=1 TEST_NESTED_VM=1 make -C %{_testsuitedir}/test/TEST-01-BASIC clean setup run
 
 For more details on the available options to run the extended
 testsuite, please refer to %{_testsuitedir}/test/README.testsuite.
@@ -610,7 +611,8 @@ change without the usual backwards-compatibility promises.
 Components that turn out to be stable and considered as fully supported will be
 merged into the main package or moved into a dedicated package.
 
-Currently this package contains: homed, repart, userdbd, oomd.
+Currently this package contains: homed, repart, userdbd, oomd, measure and
+pcrphase.
 
 In case you want to create a user with systemd-homed quickly, here are the steps
 you can follow:
@@ -1296,13 +1298,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.34.0
+%{_libdir}/libsystemd.so.0.35.0
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.4
+%{_libdir}/libudev.so.1.7.5
 
 %if %{with coredump}
 %files coredump
