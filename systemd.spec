@@ -70,6 +70,7 @@
 # value is independent of the build flavor.
 %bcond_without  filetriggers
 %bcond_with     split_usr
+%bcond_with     devel_mode
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
@@ -705,7 +706,12 @@ The HTML documentation for systemd.
 export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 
 %meson \
+%if %{with devel_mode}
+        -Db_sanitize=address,undefined \
+        -Dmode=developer \
+%else
         -Dmode=release \
+%endif
         -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
