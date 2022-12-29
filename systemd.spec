@@ -76,6 +76,7 @@
 # The following features are kept to ease migrations toward SLE. Their default
 # value is independent of the build flavor.
 %bcond_without  filetriggers
+%bcond_with     devel_mode
 
 # We stopped shipping main config files in /etc but we have to restore any
 # config files that might have been backed up by rpm during the migration of the
@@ -745,7 +746,12 @@ for the C APIs.
 export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 
 %meson \
+%if %{with devel_mode}
+        -Db_sanitize=address,undefined \
+        -Dmode=developer \
+%else
         -Dmode=release \
+%endif
         -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
         -Dconfigfiledir=/usr/lib \
