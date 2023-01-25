@@ -1,7 +1,7 @@
 #
 # spec file
 #
-# Copyright (c) 2022 SUSE LLC
+# Copyright (c) 2023 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -216,6 +216,7 @@ Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
 # very few cases, some stuff might be broken in upstream and need to be fixed
 # quickly. But even in these cases, the patches are temporary and should be
 # removed as soon as a fix is merged by upstream.
+Patch5000:      5000-rules-add-missing-line-continuation.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
