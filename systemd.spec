@@ -208,9 +208,6 @@ Patch8:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 Patch10:        0001-conf-parser-introduce-early-drop-ins.patch
 Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 
-# Temporary workaround until bsc#1197178 is addressed.
-Patch1000:      1000-Revert-getty-Pass-tty-to-use-by-agetty-via-stdin.patch
-
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
 # very few cases, some stuff might be broken in upstream and need to be fixed
