@@ -780,6 +780,10 @@ ln -s ../usr/bin/systemctl %{buildroot}/sbin/poweroff
 ln -s ../usr/bin/systemctl %{buildroot}/sbin/telinit
 ln -s ../usr/bin/systemctl %{buildroot}/sbin/runlevel
 %endif
+
+# kmod keeps insisting on using /lib/modprobe.d only.
+mkdir -p %{buildroot}%{_modprobedir}
+mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
 %endif
 
 # Make sure we don't ship static enablement symlinks in /etc during
@@ -789,12 +793,6 @@ rm -f %{buildroot}/etc/systemd/system/default.target
 
 # Replace upstream systemd-user with the openSUSE one.
 install -m0644 -D --target-directory=%{buildroot}%{_pam_vendordir} %{SOURCE2}
-
-# kmod keeps insisting on using /lib on SLE.
-if [ "$(realpath %{_modprobedir})" != /usr/lib/modprobe.d ]; then
-        mkdir -p %{buildroot}%{_modprobedir}
-        mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
-fi
 
 # Don't enable wall ask password service, it spams every console (bnc#747783).
 rm %{buildroot}%{_unitdir}/multi-user.target.wants/systemd-ask-password-wall.path
