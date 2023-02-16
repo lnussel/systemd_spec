@@ -962,7 +962,6 @@ find %{buildroot}%{_testsuitedir}/ -name .git\* -exec rm -fr {} \;
 %pre
 # Units listed below can be enabled at installation according to their preset
 # setting.
-%systemd_pre machines.target
 %systemd_pre remote-fs.target
 %systemd_pre getty@.service
 %systemd_pre systemd-timesyncd.service
@@ -1022,7 +1021,6 @@ fi
 
 # Units listed below can be enabled at installation accoding to their preset
 # setting.
-%systemd_post machines.target
 %systemd_post remote-fs.target
 %systemd_post getty@.service
 %systemd_post systemd-timesyncd.service
@@ -1136,7 +1134,11 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 %postun -n libudev%{?mini}1 -p %ldconfig
 %postun -n libsystemd0%{?mini} -p %ldconfig
 
+%pre container
+%systemd_pre machines.target
+
 %post container
+%systemd_post machines.target
 %tmpfiles_create systemd-nspawn.conf
 %if %{with machined}
 %ldconfig
@@ -1157,7 +1159,11 @@ if [ $1 -gt 1 ]; then
         %{_prefix}/lib/systemd/scripts/fix-machines-btrfs-subvol.sh || :
 fi
 
+%preun container
+%systemd_preun machines.target
+
 %postun container
+%systemd_postun machines.target
 %ldconfig
 %endif
 
