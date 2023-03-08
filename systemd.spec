@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.48.g8e0a8094b8
+%define archive_version +suse.50.gd447802fee
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -72,7 +72,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        252.6
+Version:        252.7
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -596,7 +596,7 @@ BuildRequires:  pkgconfig(openssl)
 %description experimental
 This package contains optional extra services that are considered as previews
 and are provided so users can do early experiments with the new features or
-technologies without waiting for them to be fully supported by either upstream
+technologies without waiting for them to be fully supported by both upstream
 and openSUSE.
 
 Please note that all services should be considered in development phase and as
