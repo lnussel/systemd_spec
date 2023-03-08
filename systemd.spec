@@ -114,7 +114,6 @@ BuildRequires:  python3-jinja2
 BuildRequires:  suse-module-tools >= 12.4
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
-BuildRequires:  pkgconfig(libpci) >= 3
 
 %if %{with bootstrap}
 #!BuildIgnore:  dbus-1
@@ -749,7 +748,7 @@ rm %{buildroot}%{_mandir}/man1/resolvconf.1*
 %endif
 
 %if %{with sysvcompat}
-install -m0755 -D %{SOURCE4}  %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
+install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
 %endif
 
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
@@ -780,7 +779,6 @@ ln -s ../usr/bin/systemctl %{buildroot}/sbin/poweroff
 ln -s ../usr/bin/systemctl %{buildroot}/sbin/telinit
 ln -s ../usr/bin/systemctl %{buildroot}/sbin/runlevel
 %endif
-
 # kmod keeps insisting on using /lib/modprobe.d only.
 mkdir -p %{buildroot}%{_modprobedir}
 mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
