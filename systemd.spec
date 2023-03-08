@@ -108,7 +108,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel >= 2.27.1
 BuildRequires:  meson >= 0.53.2
 BuildRequires:  pam-devel
-BuildRequires:  python3-jinja2
+BuildRequires:  python3-Jinja2
 # regenerate_initrd_post macro is expanded during build, hence this BR. Also
 # this macro was introduced since version 12.4.
 BuildRequires:  suse-module-tools >= 12.4
