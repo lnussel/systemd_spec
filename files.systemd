@@ -649,3 +649,10 @@
 /sbin/reboot
 /sbin/shutdown
 %endif
+#confext
+/usr/bin/systemd-confext
+/usr/lib/systemd/system/systemd-confext.service
+/usr/share/man/man8/systemd-confext.8.gz
+/usr/share/man/man8/systemd-confext.service.8.gz
+#
+/usr/share/man/man7/systemd.image-policy.7.gz
