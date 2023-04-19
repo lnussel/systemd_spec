@@ -508,6 +508,8 @@ Recommends:     tpm2.0-tools
 # are used by test-funtions to find the libs on the host and install them in the
 # image, see install_missing_libraries() for details.
 %if %{with resolved}
+# Optional dep for knot needed by TEST-75-RESOLVED
+Recommends:     knot
 Requires:       libidn2
 Requires:       pkgconfig(libidn2)
 %endif
