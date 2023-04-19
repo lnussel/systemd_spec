@@ -27,8 +27,8 @@
 %{_mandir}/man1/oomctl.1.gz
 %if %{with sd_boot}
 %{_mandir}/man1/systemd-measure.1.gz
-%endif
 %{_mandir}/man1/ukify.1.gz
+%endif
 %{_mandir}/man1/userdbctl.1.gz
 %{_mandir}/man5/homed.conf.5.gz
 %{_mandir}/man5/homed.conf.d.5.gz
@@ -76,7 +76,9 @@
 %{_systemd_util_dir}/systemd-sysupdate
 %{_systemd_util_dir}/systemd-userdbd
 %{_systemd_util_dir}/systemd-userwork
+%if %{with sd_boot}
 %{_systemd_util_dir}/ukify
+%endif
 %{_sysusersdir}/systemd-oom.conf
 %if %{with sd_boot}
 %{_unitdir}/initrd.target.wants/systemd-pcrphase-initrd.service
