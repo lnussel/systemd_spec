@@ -530,6 +530,7 @@ Requires:       libtss2-mu0
 Requires:       libtss2-rc0
 Requires:       lz4
 Requires:       make
+Requires:       mtools
 Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu-kvm
