@@ -200,7 +200,6 @@ Source207:      files.experimental
 Patch1:         0001-restore-var-run-and-var-lock-bind-mount-if-they-aren.patch
 Patch2:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
 Patch3:         0003-strip-the-domain-part-from-etc-hostname-when-setting.patch
-Patch5:         0005-udev-create-default-symlinks-for-primary-cd_dvd-driv.patch
 %if %{with sysvcompat}
 Patch8:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
