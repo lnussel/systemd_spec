@@ -209,9 +209,10 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
-# very few cases, some stuff might be broken in upstream and need to be fixed
-# quickly. But even in these cases, the patches are temporary and should be
-# removed as soon as a fix is merged by upstream.
+# very few cases, some stuff might be broken in upstream and need to be fixed or
+# worked around quickly. In these cases, the patches are added temporarily and
+# will be removed as soon as a proper fix will be merged by upstream.
+Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
