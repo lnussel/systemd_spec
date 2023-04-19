@@ -214,6 +214,7 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
 Patch5001:      5001-Revert-core-propagate-stop-too-if-restart-is-issued.patch
+Patch5002:      5002-systemctl-explicitly-cast-the-constants-to-uint64_t.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
