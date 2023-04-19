@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.50.gd447802fee
+%define archive_version %nil
 
 %define _testsuitedir /usr/lib/systemd/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -72,7 +72,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        252.7
+Version:        253.1
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -530,6 +530,7 @@ Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu-kvm
 Requires:       quota
+Requires:       selinux-policy-devel
 Requires:       socat
 Requires:       squashfs
 Requires:       systemd-container
@@ -885,8 +886,8 @@ rm -f %{buildroot}%{_presetdir}/*.preset
 echo 'disable *' >%{buildroot}%{_presetdir}/99-default.preset
 echo 'disable *' >%{buildroot}%{_userpresetdir}/99-default.preset
 
-# The tmpfiles dealing with the generic paths is pretty messy
-# currently because:
+# The current situation with tmpfiles snippets dealing with the generic paths is
+# pretty messy currently because:
 #
 #  1. filesystem package wants to define the generic paths and some of them
 #     conflict with the definition given by systemd in var.conf, see
@@ -930,12 +931,6 @@ fi
 # still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
 
-# Don't ship systemd-journald-audit.socket as there's no other way for us to
-# prevent journald from recording audit messages in the journal by default
-# (bsc#1109252).
-rm -f %{buildroot}%{_unitdir}/systemd-journald-audit.socket
-rm -f %{buildroot}%{_unitdir}/sockets.target.wants/systemd-journald-audit.socket
-
 %if %{with testsuite}
 # -Dinstall_test took care of installing the unit tests only (those in
 # src/tests) and testdata directory. Here we copy the integration tests
@@ -964,6 +959,7 @@ tar -cO \
 %systemd_pre remote-fs.target
 %systemd_pre getty@.service
 %systemd_pre systemd-timesyncd.service
+%systemd_pre systemd-journald-audit.socket
 
 %post
 # Make /etc/machine-id an empty file during package installation. On the first
@@ -1023,6 +1019,7 @@ fi
 %systemd_post remote-fs.target
 %systemd_post getty@.service
 %systemd_post systemd-timesyncd.service
+%systemd_post systemd-journald-audit.socket
 
 # v228 wrongly set world writable suid root permissions on timestamp files used
 # by permanent timers. Fix the timestamps that might have been created by the
@@ -1314,13 +1311,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.35.0
+%{_libdir}/libsystemd.so.0.36.0
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.5
+%{_libdir}/libudev.so.1.7.6
 
 %if %{with coredump}
 %files coredump
