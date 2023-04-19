@@ -90,3 +90,6 @@
 %{_unitdir}/systemd-sysupdate-reboot.timer
 %{_unitdir}/systemd-sysupdate.service
 %{_unitdir}/systemd-sysupdate.timer
+###
+/usr/sbin/mount.ddi
+/usr/share/man/man1/mount.ddi.1.gz
