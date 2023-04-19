@@ -684,7 +684,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         \
         -Dbump-proc-sys-fs-nr-open=false \
         -Dgshadow=false \
-        -Dima=false \
         -Dldconfig=false \
         -Dsmack=false \
         \
@@ -695,6 +694,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
         -Dhtml=%{when_not bootstrap} \
+        -Dima=%{when_not bootstrap} \
         -Dlibcryptsetup-plugins=%{when_not bootstrap} \
         -Dman=%{when_not bootstrap} \
         -Dnss-myhostname=%{when_not bootstrap} \
