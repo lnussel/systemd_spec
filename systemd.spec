@@ -587,6 +587,7 @@ refer to %{_testsuitedir}/integration-tests/README.testsuite.
 Summary:        Experimental systemd features
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
+Requires:       python3-pefile
 %systemd_requires
 # These Recommends because some symbols of these libs are dlopen()ed by home stuff
 Recommends:     libfido2
