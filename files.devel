@@ -766,7 +766,4 @@
 %{_mandir}/man3/udev_new.3.gz
 %{_mandir}/man3/udev_ref.3.gz
 %{_mandir}/man3/udev_unref.3.gz
-%{_mandir}/man8/systemd-pcrfs-root.service.8.gz
-%{_mandir}/man8/systemd-pcrfs@.service.8.gz
-%{_mandir}/man8/systemd-pcrmachine.service.8.gz
 %endif

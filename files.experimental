@@ -44,6 +44,9 @@
 %{_mandir}/man8/systemd-oomd.8.gz
 %{_mandir}/man8/systemd-oomd.service.8.gz
 %if %{with sd_boot}
+%{_mandir}/man8/systemd-pcrfs-root.service.8.gz
+%{_mandir}/man8/systemd-pcrfs@.service.8.gz
+%{_mandir}/man8/systemd-pcrmachine.service.8.gz
 %{_mandir}/man8/systemd-pcrphase-initrd.service.8.gz
 %{_mandir}/man8/systemd-pcrphase-sysinit.service.8.gz
 %{_mandir}/man8/systemd-pcrphase.8.gz
