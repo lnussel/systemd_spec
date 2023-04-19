@@ -500,6 +500,9 @@ Recommends:     python3
 Recommends:     python3-colorama
 # Optional dep for mkfs.vfat needed by test-loop-block (otherwise skipped)
 Recommends:     dosfstools
+# Optional deps needed by TEST-70-TPM2 (otherwise skipped)
+Recommends:     swtpm
+Recommends:     tpm2.0-tools
 # The following deps on libs are for test-dlopen-so whereas the pkgconfig ones
 # are used by test-funtions to find the libs on the host and install them in the
 # image, see install_missing_libraries() for details.
