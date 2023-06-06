@@ -922,6 +922,18 @@ install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
 # consume those configs (like glibc or pam), see bsc#1170146.
 rm -fr %{buildroot}%{_datadir}/factory/*
 
+# Add entries for xkeyboard-config converted keymaps; mappings, which already
+# exist in original systemd mapping table are being ignored though, i.e. not
+# overwritten; needed as long as YaST uses console keymaps internally and calls
+# localectl to convert from vconsole to X11 keymaps. Ideally YaST should switch
+# to X11 layout names (the mapping table wouldn't be needed since each X11
+# keymap has a generated xkbd keymap) and let localectl initialize
+# /etc/vconsole.conf and /etc/X11/xorg.conf.d/00-keyboard.conf (FATE#319454).
+if [ -f /usr/share/systemd/kbd-model-map.xkb-generated ]; then
+        cat /usr/share/systemd/kbd-model-map.xkb-generated \
+                >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
+fi
+
 # kbd-model-map.legacy is used to provide mapping for legacy keymaps, which may
 # still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
