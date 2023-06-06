@@ -68,6 +68,7 @@
 %bcond_without  testsuite
 %endif
 # Kept to ease migrations toward SLE
+%bcond_with     filetriggers
 %bcond_with     split_usr
 
 Name:           systemd%{?mini}
@@ -970,7 +971,17 @@ tar -cO \
 # %%systemd_{pre,post} on them, which is fortunate since the helper script the
 # systemd rpm macros rely on is not yet installed.
 %pre
-:
+%if %{without filetriggers}
+if [ $1 -gt 1 ]; then
+        # We keep these just in case we're upgrading from an old version that
+        # was missing these units. During package installation, these macros are
+        # NOPs for systemd anyways.
+        %systemd_pre remote-fs.target
+        %systemd_pre getty@.service
+        %systemd_pre systemd-timesyncd.service
+        %systemd_pre systemd-journald-audit.socket
+fi
+%endif
 
 %post
 # Make /etc/machine-id an empty file during package installation. On the first
@@ -995,12 +1006,6 @@ pam-config --add --systemd || :
 %ldconfig
 %endif
 
-# systemd-sysusers is not available in %pre so this needs to be done in
-# %%post. However this shouldn't be an issue since all files the main package
-# ships are owned by root.
-%sysusers_create systemd-journal.conf
-%sysusers_create systemd-timesync.conf
-
 systemctl daemon-reexec || :
 
 # Reexecute user manager instances (if any). It is asynchronous but it shouldn't
@@ -1017,13 +1022,28 @@ systemctl daemon-reexec || :
 #
 # systemctl kill --kill-who=main --signal=SIGRTMIN+25 "user@*.service" || :
 
-if [ "$1" -eq 1 ]; then
+if [ $1 -eq 1 ]; then
         # Persistent journal is the default
         mkdir -p %{_localstatedir}/log/journal
 fi
 
-%journal_catalog_update
-%tmpfiles_create
+%if %{without filetriggers}
+# During package installation, the followings are for config files shipped by
+# packages that got installed before systemd and by the systemd main package
+# itself. During update they deal with files that could have been introduced by
+# new versions of systemd.
+systemd-sysusers || :
+systemd-tmpfiles --create || :
+journalctl --update-catalog || :
+
+if [ $1 -gt 1 ]; then
+        # Same comment as the one for the %%systemd_pre() calls in %%pre.
+        %systemd_post remote-fs.target
+        %systemd_post getty@.service
+        %systemd_post systemd-timesyncd.service
+        %systemd_post systemd-journald-audit.socket
+fi
+%endif
 
 # v228 wrongly set world writable suid root permissions on timestamp files used
 # by permanent timers. Fix the timestamps that might have been created by the
