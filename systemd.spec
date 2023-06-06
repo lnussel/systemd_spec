@@ -986,12 +986,6 @@ if [ $1 -eq 1 ]; then
         chmod 444 %{_sysconfdir}/machine-id
 fi
 
-# /etc/machine-id might have been created writeable incorrectly (boo#1092269).
-if [ "$(stat -c%a %{_sysconfdir}/machine-id)" != 444 ]; then
-        echo "Incorrect file mode bits for /etc/machine-id which should be 0444, fixing..."
-        chmod 444 %{_sysconfdir}/machine-id
-fi
-
 %if %{without bootstrap}
 pam-config --add --systemd || :
 # Run ldconfig for nss-systemd and nss-myhostname NSS modules.
@@ -1035,29 +1029,6 @@ if [ $1 -gt 1 ]; then
         %systemd_post getty@.service
         %systemd_post systemd-timesyncd.service
         %systemd_post systemd-journald-audit.socket
-fi
-
-# v228 wrongly set world writable suid root permissions on timestamp files used
-# by permanent timers. Fix the timestamps that might have been created by the
-# affected versions of systemd (bsc#1020601).
-for stamp in $(ls /var/lib/systemd/timers/stamp-*.timer 2>/dev/null); do
-        chmod 0644 $stamp
-done
-
-# Same for user lingering created by logind.
-for username in $(ls /var/lib/systemd/linger/* 2>/dev/null); do
-        chmod 0644 $username
-done
-
-# Due to the fact that DynamicUser= was turned ON during v235 and then switched
-# back to off in v240, /var/lib/systemd/timesync might be a symlink pointing to
-# /var/lib/private/systemd/timesync, which is inaccessible for systemd-timesync
-# user as /var/lib/private is 0700 root:root, see
-# https://github.com/systemd/systemd/issues/11329 for details. Note: only TW
-# users might be affected by this bug.
-if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
-        rm %{_localstatedir}/lib/systemd/timesync
-        mv %{_localstatedir}/lib/private/systemd/timesync %{_localstatedir}/lib/systemd/timesync
 fi
 
 # Run the hacks/fixups to clean up old garbages left by (very) old versions of
