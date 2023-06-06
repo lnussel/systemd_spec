@@ -716,6 +716,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dremote=%{when journal_remote} \
         \
         -Dgnu-efi=%{when sd_boot} \
+        -Defi-color-highlight="black,green" \
         -Dkernel-install=%{when sd_boot} \
         \
         -Dsbat-distro="%{?sbat_distro}" \
