@@ -68,7 +68,7 @@
 %bcond_without  testsuite
 %endif
 # Kept to ease migrations toward SLE
-%bcond_with     filetriggers
+%bcond_without  filetriggers
 %bcond_with     split_usr
 
 Name:           systemd%{?mini}
@@ -168,11 +168,13 @@ Obsoletes:      systemd-analyze < 201
 Source0:        systemd-v%{version}%{archive_version}.tar.xz
 Source1:        systemd-rpmlintrc
 Source2:        systemd-user
+Source3:        systemd-update-helper
 %if %{with sysvcompat}
 Source4:        systemd-sysv-install
 %endif
 Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
+Source7:        triggers.systemd
 Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
@@ -758,6 +760,7 @@ rm %{buildroot}%{_sbindir}/resolvconf
 rm %{buildroot}%{_mandir}/man1/resolvconf.1*
 %endif
 
+install -m0755 -D %{SOURCE3} %{buildroot}/%{_systemd_util_dir}/systemd-update-helper
 %if %{with sysvcompat}
 install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
 %endif
@@ -1062,7 +1065,6 @@ fi
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh $1 || :
 
 %postun
-# daemon-reload is implied by systemd_postun_with_restart
 %systemd_postun_with_restart systemd-journald.service
 %systemd_postun_with_restart systemd-timesyncd.service
 # Avoid restarting logind until fixed upstream (issue #1163)
@@ -1083,8 +1085,10 @@ fi
 
 %post -n udev%{?mini}
 %regenerate_initrd_post
+%if %{without filetriggers}
 %udev_hwdb_update
 %tmpfiles_create systemd-pstore.conf
+%endif
 %systemd_post remote-cryptsetup.target
 %systemd_post systemd-pstore.service
 
@@ -1134,7 +1138,9 @@ fi
 %endif
 
 %post container
+%if %{without filetriggers}
 %tmpfiles_create systemd-nspawn.conf
+%endif
 %if %{with machined}
 %systemd_post machines.target
 %ldconfig
@@ -1182,8 +1188,10 @@ fi
 
 %post network
 %if %{with networkd}
+%if %{without filetriggers}
 %sysusers_create systemd-network.conf
 %tmpfiles_create systemd-network.conf
+%endif
 %systemd_post systemd-networkd.service
 %systemd_post systemd-networkd-wait-online.service
 %endif
@@ -1218,7 +1226,9 @@ fi
 %systemd_pre systemd-portabled.service
 
 %post portable
+%if %{without filetriggers}
 %tmpfiles_create portables.conf
+%endif
 %systemd_post systemd-portabled.service
 
 %preun portable
@@ -1249,6 +1259,11 @@ fi
 %systemd_postun systemd-homed.service
 %systemd_postun systemd-oomd.service systemd-oomd.socket
 %systemd_postun systemd-userdbd.service systemd-userdbd.socket
+%endif
+
+# File trigger definitions
+%if %{without filetriggers}
+%include %{SOURCE7}
 %endif
 
 %files
