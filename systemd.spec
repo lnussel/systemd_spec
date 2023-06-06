@@ -176,9 +176,8 @@ Source6:        baselibs.conf
 Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
-Source100:      fixlet-container-machines-btrfs-subvol.sh
-Source101:      fixlet-upgrade-from-sysvinit.sh
-Source102:      fixlet-migrate-sysconfig-i18n.sh
+Source100:      fixlet-container-post.sh
+Source101:      fixlet-systemd-post.sh
 
 Source200:      files.systemd
 Source201:      files.udev
@@ -772,7 +771,6 @@ mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
 install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
-install -m0755 %{SOURCE102} %{buildroot}%{_systemd_util_dir}/rpm/
 
 %if %{with split_usr}
 mkdir -p %{buildroot}/{bin,sbin}
@@ -843,6 +841,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
 # Make sure directories in /var exist.
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/coredump
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/catalog
+mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/rpm
 
 # Make sure the NTP units dir exists.
 mkdir -p %{buildroot}%{_ntpunitsdir}
@@ -887,7 +886,6 @@ touch %{buildroot}%{_sysconfdir}/vconsole.conf
 touch %{buildroot}%{_sysconfdir}/locale.conf
 touch %{buildroot}%{_sysconfdir}/machine-info
 touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
-touch %{buildroot}%{_localstatedir}/lib/systemd/i18n-migrated
 
 %fdupes -s %{buildroot}%{_mandir}
 
@@ -1047,19 +1045,9 @@ if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
         mv %{_localstatedir}/lib/private/systemd/timesync %{_localstatedir}/lib/systemd/timesync
 fi
 
-# This includes all hacks needed when upgrading from SysV.
-%{_systemd_util_dir}/rpm/fixlet-upgrade-from-sysvinit.sh || :
-
-# Migrate old i18n settings previously configured in /etc/sysconfig to the new
-# locations used by systemd (/etc/locale.conf, /etc/vconsole.conf, ...). Recent
-# versions of systemd parse the new locations only.
-#
-# This is needed both at package updates and package installations because we
-# might be upgrading from a system which was running SysV init (systemd package
-# is being installed).
-#
-# It's run only once.
-%{_systemd_util_dir}/rpm/fixlet-migrate-sysconfig-i18n.sh || :
+# Run the hacks/fixups to clean up old garbages left by (very) old versions of
+# systemd.
+%{_systemd_util_dir}/rpm/fixlet-systemd-post.sh $1 || :
 
 %postun
 # daemon-reload is implied by systemd_postun_with_restart
@@ -1133,30 +1121,17 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 %postun -n libudev%{?mini}1 -p %ldconfig
 %postun -n libsystemd0%{?mini} -p %ldconfig
 
-%pre container
-%systemd_pre machines.target
-
 %post container
-%systemd_post machines.target
 %tmpfiles_create systemd-nspawn.conf
 %if %{with machined}
+%systemd_post machines.target
 %ldconfig
-if [ $1 -gt 1 ]; then
-        # Convert /var/lib/machines subvolume to make it suitable for rollbacks,
-        # if needed. See bsc#992573. The installer has been fixed to create it
-        # at installation time.
-        #
-        # The conversion might only be problematic for openSUSE distros
-        # (TW/Factory) where previous versions had already created the subvolume
-        # at the wrong place (via tmpfiles for example) and user started to
-        # populate and use it. In this case we'll let the user fix it manually.
-        #
-        # For SLE12 this subvolume was only introduced during the upgrade from
-        # v210 to v228 when we added this workaround. Note that the subvolume is
-        # still created at the wrong place due to the call to tmpfiles_create
-        # macro previously however it's empty so there shouldn't be any issues.
-        %{_systemd_util_dir}/rpm/fixlet-container-machines-btrfs-subvol.sh || :
-fi
+%endif
+%{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
+
+%if %{with machined}
+%pre container
+%systemd_pre machines.target
 
 %preun container
 %systemd_preun machines.target
@@ -1165,6 +1140,14 @@ fi
 %systemd_postun machines.target
 %ldconfig
 %endif
+
+%post container
+%tmpfiles_create systemd-nspawn.conf
+%if %{with machined}
+%systemd_post machines.target
+%ldconfig
+%endif
+%{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
 
 %if %{with coredump}
 %post coredump
