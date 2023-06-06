@@ -21,7 +21,7 @@
 %define min_kernel_version 4.5
 %define archive_version +suse.28.g25aec15788
 
-%define _testsuitedir /usr/lib/systemd/tests
+%define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
 
 # Similar to %%with but returns true/false. The 'true' value can be redefined
@@ -176,9 +176,9 @@ Source6:        baselibs.conf
 Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
-Source100:      scripts-systemd-fix-machines-btrfs-subvol.sh
-Source101:      scripts-systemd-upgrade-from-pre-210.sh
-Source102:      scripts-systemd-migrate-sysconfig-i18n.sh
+Source100:      fixlet-container-machines-btrfs-subvol.sh
+Source101:      fixlet-upgrade-from-sysvinit.sh
+Source102:      fixlet-migrate-sysconfig-i18n.sh
 
 Source200:      files.systemd
 Source201:      files.udev
@@ -748,7 +748,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 
 %if %{with sd_boot}
 %ifarch x86_64
-export BRP_PESIGN_FILES="/usr/lib/systemd/boot/efi/systemd-bootx64.efi"
+export BRP_PESIGN_FILES="%{_systemd_util_dir}/boot/efi/systemd-bootx64.efi"
 %endif
 %endif
 
@@ -766,14 +766,13 @@ install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-inst
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
 mkdir -p % %{buildroot}%{_sysconfdir}/systemd/nspawn
 
-# Package the scripts used to fix all packaging issues. Also drop the
-# "scripts-{systemd/udev}" prefix which is used because osc doesn't allow
-# directories in the workspace...
+# Install the fixlets
+mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 %if %{with machined}
-install -m0755 -D %{SOURCE100} %{buildroot}%{_systemd_util_dir}/scripts/fix-machines-btrfs-subvol.sh
+install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
-install -m0755 -D %{SOURCE101} %{buildroot}%{_systemd_util_dir}/scripts/upgrade-from-pre-210.sh
-install -m0755 -D %{SOURCE102} %{buildroot}%{_systemd_util_dir}/scripts/migrate-sysconfig-i18n.sh
+install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
+install -m0755 %{SOURCE102} %{buildroot}%{_systemd_util_dir}/rpm/
 
 %if %{with split_usr}
 mkdir -p %{buildroot}/{bin,sbin}
@@ -849,8 +848,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/catalog
 mkdir -p %{buildroot}%{_ntpunitsdir}
 
 # Make sure the shutdown/sleep drop-in dirs exist.
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system-shutdown/
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system-sleep/
+mkdir -p %{buildroot}%{_systemd_util_dir}/system-shutdown/
+mkdir -p %{buildroot}%{_systemd_util_dir}/system-sleep/
 
 # Make sure these directories are properly owned.
 mkdir -p %{buildroot}%{_unitdir}/basic.target.wants
@@ -1049,7 +1048,7 @@ if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
 fi
 
 # This includes all hacks needed when upgrading from SysV.
-%{_prefix}/lib/systemd/scripts/upgrade-from-pre-210.sh || :
+%{_systemd_util_dir}/rpm/fixlet-upgrade-from-sysvinit.sh || :
 
 # Migrate old i18n settings previously configured in /etc/sysconfig to the new
 # locations used by systemd (/etc/locale.conf, /etc/vconsole.conf, ...). Recent
@@ -1060,7 +1059,7 @@ fi
 # is being installed).
 #
 # It's run only once.
-%{_prefix}/lib/systemd/scripts/migrate-sysconfig-i18n.sh || :
+%{_systemd_util_dir}/rpm/fixlet-migrate-sysconfig-i18n.sh || :
 
 %postun
 # daemon-reload is implied by systemd_postun_with_restart
@@ -1147,7 +1146,7 @@ if [ $1 -gt 1 ]; then
         # if needed. See bsc#992573. The installer has been fixed to create it
         # at installation time.
         #
-        # The convertion might only be problematic for openSUSE distros
+        # The conversion might only be problematic for openSUSE distros
         # (TW/Factory) where previous versions had already created the subvolume
         # at the wrong place (via tmpfiles for example) and user started to
         # populate and use it. In this case we'll let the user fix it manually.
@@ -1156,7 +1155,7 @@ if [ $1 -gt 1 ]; then
         # v210 to v228 when we added this workaround. Note that the subvolume is
         # still created at the wrong place due to the call to tmpfiles_create
         # macro previously however it's empty so there shouldn't be any issues.
-        %{_prefix}/lib/systemd/scripts/fix-machines-btrfs-subvol.sh || :
+        %{_systemd_util_dir}/rpm/fixlet-container-machines-btrfs-subvol.sh || :
 fi
 
 %preun container
@@ -1341,9 +1340,9 @@ fi
 %{_unitdir}/systemd-journal-gatewayd.*
 %{_unitdir}/systemd-journal-remote.*
 %{_unitdir}/systemd-journal-upload.*
-%{_prefix}/lib/systemd/systemd-journal-gatewayd
-%{_prefix}/lib/systemd/systemd-journal-remote
-%{_prefix}/lib/systemd/systemd-journal-upload
+%{_systemd_util_dir}/systemd-journal-gatewayd
+%{_systemd_util_dir}/systemd-journal-remote
+%{_systemd_util_dir}/systemd-journal-upload
 %{_sysusersdir}/systemd-remote.conf
 %{_mandir}/man5/journal-remote.conf*
 %{_mandir}/man5/journal-upload.conf*
@@ -1358,8 +1357,8 @@ fi
 %files portable
 %defattr(-,root,root)
 %{_bindir}/portablectl
-%{_prefix}/lib/systemd/systemd-portabled
-%{_prefix}/lib/systemd/portable
+%{_systemd_util_dir}/systemd-portabled
+%{_systemd_util_dir}/portable
 %{_unitdir}/systemd-portabled.service
 %{_unitdir}/dbus-org.freedesktop.portable1.service
 %{_datadir}/dbus-1/system.d/org.freedesktop.portable1.conf

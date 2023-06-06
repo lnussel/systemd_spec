@@ -44,7 +44,7 @@
 %dir %{_systemd_user_env_generator_dir}
 %dir %{_systemd_util_dir}
 %dir %{_systemd_util_dir}/ntp-units.d
-%dir %{_systemd_util_dir}/scripts
+%dir %{_systemd_util_dir}/rpm
 %dir %{_systemd_util_dir}/system-preset
 %dir %{_systemd_util_dir}/system-shutdown
 %dir %{_systemd_util_dir}/system-sleep
@@ -440,8 +440,8 @@
 %{_sysctldir}/99-sysctl.conf
 %{_systemd_user_env_generator_dir}/30-systemd-environment-d-generator
 %{_systemd_util_dir}/ntp-units.d/80-systemd-timesync.list
-%{_systemd_util_dir}/scripts/migrate-sysconfig-i18n.sh
-%{_systemd_util_dir}/scripts/upgrade-from-pre-210.sh
+%{_systemd_util_dir}/rpm/fixlet-migrate-sysconfig-i18n.sh
+%{_systemd_util_dir}/rpm/fixlet-upgrade-from-sysvinit.sh
 %{_systemd_util_dir}/system-preset/99-default.preset
 %{_systemd_util_dir}/systemd
 %{_systemd_util_dir}/systemd-binfmt
