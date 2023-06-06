@@ -1084,21 +1084,9 @@ fi
 %post -n udev%{?mini}
 %regenerate_initrd_post
 %udev_hwdb_update
-
 %tmpfiles_create systemd-pstore.conf
-
-# Units listed below can be enabled at installation accoding to their preset
-# setting.
 %systemd_post remote-cryptsetup.target
 %systemd_post systemd-pstore.service
-
-# add KERNEL name match to existing persistent net rules
-sed -ri '/KERNEL/ ! { s/NAME="(eth|wlan|ath)([0-9]+)"/KERNEL=="\1*", NAME="\1\2"/}' \
-    /etc/udev/rules.d/70-persistent-net.rules 2>/dev/null || :
-
-# cleanup old stuff
-rm -f /etc/sysconfig/udev
-rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 
 %preun -n udev%{?mini}
 %systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
