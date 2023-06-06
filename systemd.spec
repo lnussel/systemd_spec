@@ -1133,14 +1133,6 @@ rm -f /etc/udev/rules.d/{20,55,65}-cdrom.rules
 %postun -n libudev%{?mini}1 -p %ldconfig
 %postun -n libsystemd0%{?mini} -p %ldconfig
 
-%post container
-%tmpfiles_create systemd-nspawn.conf
-%if %{with machined}
-%systemd_post machines.target
-%ldconfig
-%endif
-%{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
-
 %if %{with machined}
 %pre container
 %systemd_pre machines.target
