@@ -1233,7 +1233,7 @@ fi
 %endif
 
 # File trigger definitions
-%if %{without filetriggers}
+%if %{with filetriggers}
 %include %{SOURCE7}
 %endif
 
