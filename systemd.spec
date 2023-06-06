@@ -1033,7 +1033,7 @@ systemd-tmpfiles --create || :
 journalctl --update-catalog || :
 
 if [ $1 -gt 1 ]; then
-        # Same comment as the one for the %%systemd_pre() calls in %%pre.
+        # See comments for %%systemd_pre in %%pre.
         %systemd_post remote-fs.target
         %systemd_post getty@.service
         %systemd_post systemd-timesyncd.service
