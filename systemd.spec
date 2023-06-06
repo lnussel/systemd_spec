@@ -965,17 +965,13 @@ tar -cO \
 # Don't drop %%pre section even if it becomes empty: the build process of
 # installation images uses a hardcoded list of packages with a %%pre that needs
 # to be run during the build and complains if it can't find one.
-#
-# Note: presets for units shipped by the main package are applied by %%posttrans
-# scripts of systemd-presets-common-SUSE. Hence we don't need to bother running
-# %%systemd_{pre,post} on them, which is fortunate since the helper script the
-# systemd rpm macros rely on is not yet installed.
 %pre
 %if %{without filetriggers}
 if [ $1 -gt 1 ]; then
         # We keep these just in case we're upgrading from an old version that
         # was missing these units. During package installation, these macros are
-        # NOPs for systemd anyways.
+        # NOPs for systemd anyways (the branding preset package takes care of
+        # applying the presets in its %%posttrans in this case).
         %systemd_pre remote-fs.target
         %systemd_pre getty@.service
         %systemd_pre systemd-timesyncd.service
