@@ -137,15 +137,17 @@ Requires:       netcfg >= 11.5
 Requires:       systemd-default-settings-branding
 Requires:       systemd-presets-branding
 Requires:       util-linux >= 2.27.1
+Requires:       group(lock)
+# The next dependency is also needed with file-triggers enabled due to the way
+# the libzypp default transaction backend works.
 Requires(pre):  group(lock)
-# This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
-Recommends:     libpcre2-8-0
-Recommends:     libbpf0
-
 Requires(post): coreutils
 Requires(post): findutils
 Requires(post): systemd-presets-branding
 Requires(post): pam-config >= 0.79-5
+# This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
+Recommends:     libpcre2-8-0
+Recommends:     libbpf0
 %endif
 Conflicts:      filesystem < 11.5
 Conflicts:      mkinitrd < 2.7.0
@@ -323,6 +325,9 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       filesystem
 Requires:       kmod
 Requires:       system-group-hardware
+Requires:       group(kvm)
+# The next dependency is also needed with file-triggers enabled due to the way
+# the libzypp default transaction backend works.
 Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
