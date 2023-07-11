@@ -68,7 +68,7 @@
 %bcond_without  testsuite
 %endif
 # Kept to ease migrations toward SLE
-%bcond_without  filetriggers
+%bcond_with     filetriggers
 %bcond_with     split_usr
 
 Name:           systemd%{?mini}
@@ -137,7 +137,7 @@ Requires:       netcfg >= 11.5
 Requires:       systemd-default-settings-branding
 Requires:       systemd-presets-branding
 Requires:       util-linux >= 2.27.1
-Requires:       group(lock)
+Requires(pre):  group(lock)
 # This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
 Recommends:     libpcre2-8-0
 Recommends:     libbpf0
@@ -323,7 +323,7 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       filesystem
 Requires:       kmod
 Requires:       system-group-hardware
-Requires:       group(kvm)
+Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
 Requires(postun):coreutils
