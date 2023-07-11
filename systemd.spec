@@ -21,6 +21,12 @@
 %define min_kernel_version 4.5
 %define archive_version +suse.2.g1f73719d67
 
+%define systemd_major      254
+%define systemd_minor      1
+%define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
+%define libudev_version    1.7.7
+%define libsystemd_version 0.37.0
+
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
 
@@ -67,7 +73,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        254.1
+Version:        %{systemd_version}
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -1331,13 +1337,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.37.0
+%{_libdir}/libsystemd.so.%{libsystemd_version}
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.7
+%{_libdir}/libudev.so.%{libudev_version}
 
 %if %{with coredump}
 %files coredump
