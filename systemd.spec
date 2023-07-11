@@ -20,11 +20,11 @@
 
 %define archive_version +suse.22.g67a5ac1043
 
-%define systemd_major      254
-%define systemd_minor      1
+%define systemd_major      256
+#define systemd_minor      1
 %define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
-%define libudev_version    1.7.7
-%define libsystemd_version 0.37.0
+%define libudev_version    1.7.8
+%define libsystemd_version 0.38.0
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
