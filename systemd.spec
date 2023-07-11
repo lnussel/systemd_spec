@@ -1097,14 +1097,14 @@ fi
 %endif
 
 %post container
+%if %{with machined}
 %if %{without filetriggers}
 %tmpfiles_create systemd-nspawn.conf
 %endif
-%if %{with machined}
 %systemd_post machines.target
 %ldconfig
-%endif
 %{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
+%endif
 
 %if %{with coredump}
 %post coredump
