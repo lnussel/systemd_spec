@@ -25,7 +25,7 @@
 %if %{defined version_override}
 %define systemd_major      %version_override
 %else
-%define systemd_major      254
+%define systemd_major      256
 %define systemd_minor      1
 %define archive_version    +suse.28.g53e2aaaf9d
 
