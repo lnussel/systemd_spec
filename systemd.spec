@@ -68,7 +68,7 @@
 %bcond_without  testsuite
 %endif
 # Kept to ease migrations toward SLE
-%bcond_with     filetriggers
+%bcond_without  filetriggers
 %bcond_with     split_usr
 
 Name:           systemd%{?mini}
