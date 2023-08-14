@@ -1070,6 +1070,7 @@ fi
 %if %{without filetriggers}
 %udev_hwdb_update
 %tmpfiles_create systemd-pstore.conf
+%sysusers_create systemd-timesync.conf
 %endif
 %systemd_post remote-cryptsetup.target
 %systemd_post systemd-pstore.service
