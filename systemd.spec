@@ -38,6 +38,7 @@
 %define mini -mini
 %bcond_without  bootstrap
 %bcond_with     coredump
+%bcond_with     homed
 %bcond_with     importd
 %bcond_with     journal_remote
 %bcond_with     machined
@@ -52,6 +53,7 @@
 %define mini %nil
 %bcond_with     bootstrap
 %bcond_without  coredump
+%bcond_without  homed
 %bcond_without  importd
 %bcond_without  journal_remote
 %bcond_without  machined
@@ -188,6 +190,7 @@ Source205:      files.sysvcompat
 Source206:      files.uefi-boot
 Source207:      files.experimental
 Source208:      files.coredump
+Source209:      files.homed
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -480,6 +483,43 @@ To activate this NSS module, you will need to include it in /etc/nsswitch.conf,
 see nss-resolve(8) manpage for more details.
 %endif
 
+%if %{with homed}
+%package homed
+Summary:        Home Area/User Account Manager
+License:        LGPL-2.1-or-later
+Requires:       %{name} = %{version}-%{release}
+%systemd_requires
+BuildRequires:  pkgconfig(fdisk)
+BuildRequires:  pkgconfig(libcryptsetup)
+BuildRequires:  pkgconfig(libfido2)
+BuildRequires:  pkgconfig(libqrencode)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(pwquality)
+# These Recommends because some symbols of these libs are dlopen()ed by homed
+Recommends:     libfido2
+Recommends:     libpwquality1
+Recommends:     libqrencode4
+
+%description homed
+This package contains systemd-homed.service, a system service that manages home
+directories of users. The home directories managed are self-contained, and thus
+include the user's full metadata record in the home's data storage itself,
+making them easy to migrate between machines; the user account and home
+directory becoming the same concept.
+
+This package also includes homectl(1), a tool to interact with systemd-homed and
+PAM module to automatically mount home directories on user login.
+
+See homectl(1) man page for instructions to create a new user account.
+
+A description of the various storage mechanisms implemented by systemd-homed can
+be found at https://systemd.io/HOME_DIRECTORY/.
+
+Note that nss-systemd has still not been integrated into nsswitch and therefore
+needs to be added manually into /etc/nsswitch.conf, see nss-systemd(8) man page
+for an example on how to do that.
+%endif
+
 %if %{with portabled}
 %package portable
 Summary:        Systemd tools for portable services
@@ -488,9 +528,8 @@ Requires:       %{name} = %{version}-%{release}
 %systemd_requires
 
 %description portable
-Systemd tools to manage portable services. The feature is still
-considered experimental so the package might change  or vanish.
-Use at own risk.
+Systemd tools to manage portable services. The feature is still considered
+experimental so the package might change or vanish.  Use at own risk.
 
 More information can be found online:
 
@@ -617,17 +656,8 @@ Requires:       %{name} = %{version}-%{release}
 # Needed by ukify
 Requires:       python3-pefile
 %systemd_requires
-# These Recommends because some symbols of these libs are dlopen()ed by home stuff
-Recommends:     libfido2
-Recommends:     libpwquality1
-Recommends:     libqrencode4
-# libfido2, libpwquality1 and libqrencode4 are build requirements for home stuff
-BuildRequires:  pkgconfig(libfido2)
-BuildRequires:  pkgconfig(libqrencode)
-BuildRequires:  pkgconfig(pwquality)
-# fdisk and openssl are build requirements for home stuff and repart
+# fdisk is a build requirement for repart
 BuildRequires:  pkgconfig(fdisk)
-BuildRequires:  pkgconfig(openssl)
 
 %description experimental
 This package contains optional extra services that are considered as previews
@@ -642,24 +672,7 @@ change without the usual backwards-compatibility promises.
 Components that turn out to be stable and considered as fully supported will be
 merged into the main package or moved into a dedicated package.
 
-Currently this package contains: homed, repart, oomd, measure,
-pcrphase and ukify.
-
-In case you want to create a user with systemd-homed quickly, here are the steps
-you can follow:
-
- - Make sure the nss-systemd package is installed and added into
-   /etc/nsswitch.conf, see nss-systemd(8) man page for details
-
- - Integrate pam_systemd_home.so in your PAM stack. You can do that either by
-   following the instructions in pam_systemd_home(8) man page or by executing
-   `pam-config --add --systemd_home` command
-
- - Enable and start systemd-homed with `systemctl enable --now systemd-homed`
-
- - Create a user with `homectl create <username>`
-
- - Verify the previous steps with `getent passwd <username>`
+Currently this package contains: repart, oomd, measure, pcrphase and ukify.
 
 Have fun (at your own risk).
 %endif
@@ -736,6 +749,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Duserdb=%{when_not bootstrap} \
         \
         -Dcoredump=%{when coredump} \
+        -Dhomed=%{when homed} \
         -Dimportd=%{when importd} \
         -Dmachined=%{when machined} \
         -Dnetworkd=%{when networkd} \
@@ -757,7 +771,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Ddns-over-tls=%{when resolved openssl} \
         -Dresolve=%{when resolved} \
         \
-        -Dhomed=%{when experimental} \
         -Doomd=%{when experimental} \
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
@@ -1206,6 +1219,26 @@ fi
 %endif
 %endif
 
+%if %{with homed}
+%pre homed
+%systemd_pre systemd-homed.service
+
+%post homed
+if [ $1 -eq 1 ]; then
+        pam-config --add --systemd-homed || :
+fi
+%systemd_post systemd-homed.service
+
+%preun homed
+%systemd_preun systemd-homed.service
+if [ $1 -eq 0 ]; then
+        pam-config --delete --systemd-homed || :
+fi
+
+%postun homed
+%systemd_postun_with_restart systemd-homed.service
+%endif
+
 %if %{with portabled}
 %pre portable
 %systemd_pre systemd-portabled.service
@@ -1220,7 +1253,7 @@ fi
 %systemd_preun systemd-portabled.service
 
 %postun portable
-%systemd_postun systemd-portabled.service
+%systemd_postun_with_restart systemd-portabled.service
 %endif
 
 %if %{with experimental}
@@ -1327,6 +1360,12 @@ fi
 %{_mandir}/man8/systemd-journal-upload.*
 %{_datadir}/systemd/gatewayd
 %ghost %dir %{_localstatedir}/log/journal/remote
+%endif
+
+%if %{with homed}
+%files homed
+%defattr(-,root,root)
+%include %{SOURCE209}
 %endif
 
 %if %{with portabled}
