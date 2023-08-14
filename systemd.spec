@@ -615,6 +615,9 @@ Requires:       systemd-coredump
 %if %{with experimental}
 Requires:       systemd-experimental
 %endif
+%if %{with homed}
+Requires:       systemd-homed
+%endif
 %if %{with journal_remote}
 Requires:       systemd-journal-remote
 %endif
