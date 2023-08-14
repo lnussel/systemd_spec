@@ -642,7 +642,7 @@ change without the usual backwards-compatibility promises.
 Components that turn out to be stable and considered as fully supported will be
 merged into the main package or moved into a dedicated package.
 
-Currently this package contains: homed, repart, userdbd, oomd, measure,
+Currently this package contains: homed, repart, oomd, measure,
 pcrphase and ukify.
 
 In case you want to create a user with systemd-homed quickly, here are the steps
@@ -733,6 +733,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \
+        -Duserdb=%{when_not bootstrap} \
         \
         -Dcoredump=%{when coredump} \
         -Dimportd=%{when importd} \
@@ -760,7 +761,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Doomd=%{when experimental} \
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
-        -Duserdb=%{when experimental} \
         \
         -Dtests=%{when testsuite unsafe} \
         -Dinstall-tests=%{when testsuite}
@@ -996,6 +996,7 @@ if [ $1 -gt 1 ]; then
         %systemd_pre getty@.service
         %systemd_pre systemd-timesyncd.service
         %systemd_pre systemd-journald-audit.socket
+        %systemd_pre systemd-userdbd.socket
 fi
 
 %post
@@ -1039,6 +1040,7 @@ if [ $1 -gt 1 ]; then
         %systemd_post getty@.service
         %systemd_post systemd-timesyncd.service
         %systemd_post systemd-journald-audit.socket
+        %systemd_post systemd-userdbd.socket
 fi
 
 # Run the hacks/fixups to clean up old garbages left by (very) old versions of
@@ -1046,9 +1048,10 @@ fi
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh $1 || :
 
 %postun
+# Avoid restarting logind until fixed upstream (issue #1163)
 %systemd_postun_with_restart systemd-journald.service
 %systemd_postun_with_restart systemd-timesyncd.service
-# Avoid restarting logind until fixed upstream (issue #1163)
+%systemd_postun_with_restart systemd-userdbd.service
 
 %pre -n udev%{?mini}
 # Units listed below can be enabled at installation accoding to their preset
@@ -1224,23 +1227,19 @@ fi
 %pre experimental
 %systemd_pre systemd-homed.service
 %systemd_pre systemd-oomd.service systemd-oomd.socket
-%systemd_pre systemd-userdbd.service systemd-userdbd.socket
 
 %post experimental
 %sysusers_create systemd-oom.conf
 %systemd_post systemd-homed.service
 %systemd_post systemd-oomd.service systemd-oomd.socket
-%systemd_post systemd-userdbd.service systemd-userdbd.socket
 
 %preun experimental
 %systemd_preun systemd-homed.service
 %systemd_preun systemd-oomd.service systemd-oomd.socket
-%systemd_preun systemd-userdbd.service systemd-userdbd.socket
 
 %postun experimental
 %systemd_postun systemd-homed.service
 %systemd_postun systemd-oomd.service systemd-oomd.socket
-%systemd_postun systemd-userdbd.service systemd-userdbd.socket
 %endif
 
 # File trigger definitions

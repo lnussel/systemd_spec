@@ -9,7 +9,6 @@
 %{_bindir}/homectl
 %{_bindir}/oomctl
 %{_bindir}/systemd-repart
-%{_bindir}/userdbctl
 %{_datadir}/bash-completion/completions/homectl
 %{_datadir}/bash-completion/completions/oomctl
 %{_datadir}/dbus-1/interfaces/org.freedesktop.home1.Home.xml
@@ -29,7 +28,6 @@
 %{_mandir}/man1/systemd-measure.1.gz
 %{_mandir}/man1/ukify.1.gz
 %endif
-%{_mandir}/man1/userdbctl.1.gz
 %{_mandir}/man5/homed.conf.5.gz
 %{_mandir}/man5/homed.conf.d.5.gz
 %{_mandir}/man5/oomd.conf.5.gz
@@ -59,8 +57,6 @@
 %{_mandir}/man8/systemd-sysupdate.8.gz
 %{_mandir}/man8/systemd-sysupdate.service.8.gz
 %{_mandir}/man8/systemd-sysupdate.timer.8.gz
-%{_mandir}/man8/systemd-userdbd.8.gz
-%{_mandir}/man8/systemd-userdbd.service.8.gz
 %{_pam_moduledir}/pam_systemd_home.so
 %{_systemd_util_dir}/system/initrd-root-fs.target.wants/systemd-repart.service
 %{_systemd_util_dir}/system/sysinit.target.wants/systemd-repart.service
@@ -74,7 +70,6 @@
 %{_systemd_util_dir}/systemd-pcrphase
 %endif
 %{_systemd_util_dir}/systemd-sysupdate
-%{_systemd_util_dir}/systemd-userdbd
 %{_systemd_util_dir}/systemd-userwork
 %if %{with sd_boot}
 %{_systemd_util_dir}/ukify
@@ -103,5 +98,3 @@
 %{_unitdir}/systemd-sysupdate-reboot.timer
 %{_unitdir}/systemd-sysupdate.service
 %{_unitdir}/systemd-sysupdate.timer
-%{_unitdir}/systemd-userdbd.service
-%{_unitdir}/systemd-userdbd.socket
