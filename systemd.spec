@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.29.g07bb12a282
+%define archive_version +suse.30.g6458c06654
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -73,7 +73,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253.5
+Version:        253.6
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -214,7 +214,6 @@ Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
 Patch5001:      5001-Revert-core-propagate-stop-too-if-restart-is-issued.patch
-Patch5002:      5002-Revert-core-service-when-resetting-PID-also-reset-kn.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
