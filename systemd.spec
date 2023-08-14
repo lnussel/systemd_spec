@@ -202,13 +202,12 @@ Source209:      files.homed
 # get rid of one of them !
 #
 Patch1:         0001-restore-var-run-and-var-lock-bind-mount-if-they-aren.patch
-Patch2:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
-Patch3:         0003-strip-the-domain-part-from-etc-hostname-when-setting.patch
+Patch2:         0001-conf-parser-introduce-early-drop-ins.patch
+Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
-Patch8:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
+Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
+Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
-Patch10:        0001-conf-parser-introduce-early-drop-ins.patch
-Patch12:        0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
