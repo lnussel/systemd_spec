@@ -93,3 +93,6 @@
 ###
 /usr/sbin/mount.ddi
 /usr/share/man/man1/mount.ddi.1.gz
+#
+/usr/bin/systemd-bsod
+/usr/share/man/man8/systemd-bsod.8.gz
