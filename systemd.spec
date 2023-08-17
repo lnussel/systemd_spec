@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version %{nil}
+%define archive_version +suse.2.g1f73719d67
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
