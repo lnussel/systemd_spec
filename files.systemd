@@ -206,23 +206,7 @@
 %{_datadir}/zsh/site-functions/_systemd-tmpfiles
 %{_datadir}/zsh/site-functions/_timedatectl
 %endif
-%{_journalcatalogdir}/systemd.be.catalog
-%{_journalcatalogdir}/systemd.be@latin.catalog
-%{_journalcatalogdir}/systemd.bg.catalog
 %{_journalcatalogdir}/systemd.catalog
-%{_journalcatalogdir}/systemd.da.catalog
-%{_journalcatalogdir}/systemd.de.catalog
-%{_journalcatalogdir}/systemd.fr.catalog
-%{_journalcatalogdir}/systemd.hr.catalog
-%{_journalcatalogdir}/systemd.hu.catalog
-%{_journalcatalogdir}/systemd.it.catalog
-%{_journalcatalogdir}/systemd.ko.catalog
-%{_journalcatalogdir}/systemd.pl.catalog
-%{_journalcatalogdir}/systemd.pt_BR.catalog
-%{_journalcatalogdir}/systemd.ru.catalog
-%{_journalcatalogdir}/systemd.sr.catalog
-%{_journalcatalogdir}/systemd.zh_CN.catalog
-%{_journalcatalogdir}/systemd.zh_TW.catalog
 %if %{without bootstrap}
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_systemd.so.2
