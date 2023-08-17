@@ -584,6 +584,9 @@ Recommends:     tpm2.0-tools
 %if %{with resolved}
 # Optional dep for knot needed by TEST-75-RESOLVED
 Recommends:     knot
+# Optional deps needed by TEST-06-SELINUX (otherwise skipped)
+Recommends:     selinux-policy-devel
+Recommends:     selinux-policy-targeted
 Requires:       libidn2
 Requires:       pkgconfig(libidn2)
 %endif
@@ -612,7 +615,6 @@ Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu-kvm
 Requires:       quota
-Requires:       selinux-policy-devel
 Requires:       socat
 Requires:       squashfs
 Requires:       systemd-container
