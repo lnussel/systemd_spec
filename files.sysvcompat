@@ -22,8 +22,6 @@
 %{_systemdgeneratordir}/systemd-rc-local-generator
 %{_systemdgeneratordir}/systemd-sysv-generator
 %{_unitdir}/graphical.target.wants/systemd-update-utmp-runlevel.service
-%{_unitdir}/local-fs.target.wants/var-lock.mount
-%{_unitdir}/local-fs.target.wants/var-run.mount
 %{_unitdir}/multi-user.target.wants/systemd-update-utmp-runlevel.service
 %{_unitdir}/rc-local.service
 %{_unitdir}/rescue.target.wants/systemd-update-utmp-runlevel.service
@@ -38,8 +36,6 @@
 %{_unitdir}/systemd-initctl.service
 %{_unitdir}/systemd-initctl.socket
 %{_unitdir}/systemd-update-utmp-runlevel.service
-%{_unitdir}/var-lock.mount
-%{_unitdir}/var-run.mount
 %if %{with split_usr}
 /sbin/runlevel
 /sbin/telinit

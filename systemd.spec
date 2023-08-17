@@ -19,7 +19,7 @@
 %global flavor @BUILD_FLAVOR@%{nil}
 
 %define min_kernel_version 4.5
-%define archive_version +suse.32.gfcdb2dd2c9
+%define archive_version %{nil}
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -75,7 +75,7 @@
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        253.8
+Version:        254.1
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
@@ -196,12 +196,11 @@ Source209:      files.homed
 # All changes backported from upstream are tracked by the git repository, which
 # can be found at:  https://github.com/openSUSE/systemd.
 #
-# Patches listed below are openSUSE specific and should be kept at its
+# Patches listed below are openSUSE specific ones and should be kept at its
 # minimum. We try hard to push our changes to upstream but sometimes they are
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
-Patch1:         0001-restore-var-run-and-var-lock-bind-mount-if-they-aren.patch
 Patch2:         0001-conf-parser-introduce-early-drop-ins.patch
 Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
@@ -215,7 +214,6 @@ Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # worked around quickly. In these cases, the patches are added temporarily and
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
-Patch5001:      5001-Revert-core-propagate-stop-too-if-restart-is-issued.patch
 
 %description
 Systemd is a system and service manager, compatible with SysV and LSB
@@ -402,8 +400,8 @@ Visit https://systemd.io/COREDUMP for more details.
 %package boot
 Summary:        A simple UEFI boot manager
 License:        LGPL-2.1-or-later
-BuildRequires:  gnu-efi
 BuildRequires:  pesign-obs-integration
+BuildRequires:  python3-pyelftools
 
 %description boot
 This package provides systemd-boot (short: sd-boot), which is a simple UEFI boot
@@ -770,7 +768,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dportabled=%{when portabled} \
         -Dremote=%{when journal_remote} \
         \
-        -Dgnu-efi=%{when sd_boot} \
+        -Dbootloader=%{when sd_boot} \
         -Defi-color-highlight="black,green" \
         \
         -Dsbat-distro="%{?sbat_distro}" \
@@ -1337,13 +1335,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.36.0
+%{_libdir}/libsystemd.so.0.37.0
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.6
+%{_libdir}/libudev.so.1.7.7
 
 %if %{with coredump}
 %files coredump

@@ -101,6 +101,7 @@
 %{_bindir}/systemd-cat
 %{_bindir}/systemd-cgls
 %{_bindir}/systemd-cgtop
+%{_bindir}/systemd-confext
 %{_bindir}/systemd-creds
 %{_bindir}/systemd-delta
 %{_bindir}/systemd-detect-virt
@@ -226,8 +227,8 @@
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_systemd.so.2
 %endif
-%{_libdir}/systemd/libsystemd-core-253.so
-%{_libdir}/systemd/libsystemd-shared-253.so
+%{_libdir}/systemd/libsystemd-core-254.so
+%{_libdir}/systemd/libsystemd-shared-254.so
 %if %{without bootstrap}
 %{_mandir}/man1/busctl.1.gz
 %{_mandir}/man1/hostnamectl.1.gz
@@ -235,6 +236,7 @@
 %{_mandir}/man1/journalctl.1.gz
 %{_mandir}/man1/localectl.1.gz
 %{_mandir}/man1/loginctl.1.gz
+%{_mandir}/man1/mount.ddi.1.gz
 %{_mandir}/man1/systemctl.1.gz
 %{_mandir}/man1/systemd-ac-power.1.gz
 %{_mandir}/man1/systemd-analyze.1.gz
@@ -350,10 +352,13 @@
 %{_mandir}/man8/systemd-binfmt.service.8.gz
 %{_mandir}/man8/systemd-boot-check-no-failures.8.gz
 %{_mandir}/man8/systemd-boot-check-no-failures.service.8.gz
+%{_mandir}/man8/systemd-confext.8.gz
+%{_mandir}/man8/systemd-confext.service.8.gz
 %{_mandir}/man8/systemd-debug-generator.8.gz
 %{_mandir}/man8/systemd-environment-d-generator.8.gz
 %{_mandir}/man8/systemd-getty-generator.8.gz
 %{_mandir}/man8/systemd-halt.service.8.gz
+%{_mandir}/man8/systemd-hibernate-resume.service.8.gz
 %{_mandir}/man8/systemd-hostnamed.8.gz
 %{_mandir}/man8/systemd-hostnamed.service.8.gz
 %{_mandir}/man8/systemd-journald-audit.socket.8.gz
@@ -375,6 +380,7 @@
 %{_mandir}/man8/systemd-run-generator.8.gz
 %{_mandir}/man8/systemd-shutdown.8.gz
 %{_mandir}/man8/systemd-socket-proxyd.8.gz
+%{_mandir}/man8/systemd-soft-reboot.service.8.gz
 %{_mandir}/man8/systemd-sysctl.8.gz
 %{_mandir}/man8/systemd-sysctl.service.8.gz
 %{_mandir}/man8/systemd-sysext.8.gz
@@ -405,6 +411,7 @@
 %{_pam_vendordir}/systemd-user
 %{_sbindir}/halt
 %{_sbindir}/init
+%{_sbindir}/mount.ddi
 %{_sbindir}/poweroff
 %{_sbindir}/reboot
 %{_sbindir}/shutdown
@@ -551,6 +558,7 @@
 %{_unitdir}/sockets.target
 %{_unitdir}/sockets.target.wants/systemd-journald-dev-log.socket
 %{_unitdir}/sockets.target.wants/systemd-journald.socket
+%{_unitdir}/soft-reboot.target
 %{_unitdir}/sound.target
 %{_unitdir}/swap.target
 %{_unitdir}/sys-fs-fuse-connections.mount
@@ -587,6 +595,7 @@
 %{_unitdir}/systemd-ask-password-wall.service
 %{_unitdir}/systemd-binfmt.service
 %{_unitdir}/systemd-boot-check-no-failures.service
+%{_unitdir}/systemd-confext.service
 %{_unitdir}/systemd-exit.service
 %{_unitdir}/systemd-halt.service
 %{_unitdir}/systemd-hostnamed.service
@@ -604,6 +613,7 @@
 %{_unitdir}/systemd-logind.service
 %{_unitdir}/systemd-machine-id-commit.service
 %{_unitdir}/systemd-poweroff.service
+%{_unitdir}/systemd-soft-reboot.service
 %{_unitdir}/systemd-sysctl.service
 %{_unitdir}/systemd-sysext.service
 %{_unitdir}/systemd-sysusers.service
