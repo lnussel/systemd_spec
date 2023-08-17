@@ -569,7 +569,6 @@ systemd-journal-remote, and systemd-journal-upload.
 %if %{with testsuite}
 %package testsuite
 Summary:        Testsuite for systemd
-# Unit tests dependencies
 License:        LGPL-2.1-or-later
 Recommends:     python3
 Recommends:     python3-colorama
@@ -578,15 +577,15 @@ Recommends:     dosfstools
 # Optional deps needed by TEST-70-TPM2 (otherwise skipped)
 Recommends:     swtpm
 Recommends:     tpm2.0-tools
-# The following deps on libs are for test-dlopen-so whereas the pkgconfig ones
-# are used by test-funtions to find the libs on the host and install them in the
-# image, see install_missing_libraries() for details.
 %if %{with resolved}
 # Optional dep for knot needed by TEST-75-RESOLVED
 Recommends:     knot
 # Optional deps needed by TEST-06-SELINUX (otherwise skipped)
 Recommends:     selinux-policy-devel
 Recommends:     selinux-policy-targeted
+# The following deps on libs are for test-dlopen-so whereas the pkgconfig ones
+# are used by test-funtions to find the libs on the host and install them in the
+# image, see install_missing_libraries() for details.
 Requires:       libidn2
 Requires:       pkgconfig(libidn2)
 %endif
