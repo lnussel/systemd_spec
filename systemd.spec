@@ -1092,6 +1092,8 @@ tar -cO \
     --exclude-vcs  \
     --exclude-vcs-ignores \
     -C test/ . | tar -xC %{buildroot}%{_testsuitedir}/integration-tests
+    rm %{buildroot}%{_testsuitedir}/integration-tests/test-network/conf/25-default.link
+    rm %{buildroot}%{_testsuitedir}/testdata/test-network/conf/25-default.link
 %endif
 
 %if %{without bootstrap}
