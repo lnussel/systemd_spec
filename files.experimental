@@ -94,5 +94,11 @@
 /usr/sbin/mount.ddi
 /usr/share/man/man1/mount.ddi.1.gz
 #
-/usr/bin/systemd-bsod
+%{_systemd_util_dir}/systemd-bsod
 /usr/share/man/man8/systemd-bsod.8.gz
+/usr/bin/ukify
+/usr/lib/systemd/system/initrd.target.wants/systemd-bsod.service
+/usr/lib/systemd/system/systemd-bsod.service
+/usr/share/man/man3/sd_id128_get_app_specific.3.gz
+/usr/share/man/man8/systemd-bsod.service.8.gz
+/usr/share/man/man8/systemd-tmpfiles-setup-dev-early.service.8.gz
