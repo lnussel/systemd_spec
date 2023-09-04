@@ -1235,14 +1235,14 @@ fi
 
 %post homed
 if [ $1 -eq 1 ]; then
-        pam-config --add --systemd-homed || :
+        pam-config --add --systemd_home || :
 fi
 %systemd_post systemd-homed.service
 
 %preun homed
 %systemd_preun systemd-homed.service
 if [ $1 -eq 0 ]; then
-        pam-config --delete --systemd-homed || :
+        pam-config --delete --systemd_home || :
 fi
 
 %postun homed
