@@ -47,7 +47,6 @@
 %dir %{_systemd_util_dir}/system-preset
 %dir %{_systemd_util_dir}/system-shutdown
 %dir %{_systemd_util_dir}/user
-%dir %{_systemd_util_dir}/user-generators
 %dir %{_systemd_util_dir}/user-preset
 %dir %{_systemdgeneratordir}
 %dir %{_systemdusergeneratordir}
@@ -72,6 +71,7 @@
 %dir %{_unitdir}/sockets.target.wants
 %dir %{_unitdir}/sysinit.target.wants
 %dir %{_unitdir}/timers.target.wants
+%dir %{_unitdir}/user-.slice.d
 %dir %{_unitdir}/user@.service.d
 %dir %{_unitdir}/user@0.service.d
 %dir %{xinitconfdir}
@@ -427,7 +427,6 @@
 %{_systemd_util_dir}/systemd-userdbd
 %endif
 %{_systemd_util_dir}/systemd-xdg-autostart-condition
-%{_systemd_util_dir}/user-generators/systemd-xdg-autostart-generator
 %{_systemd_util_dir}/user-preset/90-systemd.preset
 %{_systemd_util_dir}/user-preset/99-default.preset
 %{_systemd_util_dir}/user/app.slice
@@ -455,6 +454,7 @@
 %{_systemdgeneratordir}/systemd-getty-generator
 %{_systemdgeneratordir}/systemd-run-generator
 %{_systemdgeneratordir}/systemd-system-update-generator
+%{_systemdusergeneratordir}/systemd-xdg-autostart-generator
 %{_sysusersdir}/systemd-journal.conf
 %{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/journal-nocow.conf
@@ -618,7 +618,6 @@
 %{_unitdir}/tmp.mount
 %{_unitdir}/umount.target
 %{_unitdir}/usb-gadget.target
-%{_unitdir}/user-.slice.d
 %{_unitdir}/user-.slice.d/10-defaults.conf
 %{_unitdir}/user-runtime-dir@.service
 %{_unitdir}/user.slice
