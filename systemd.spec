@@ -226,19 +226,6 @@ maintains mount and automount points and implements an elaborate
 transactional dependency-based service control logic. It can work as a
 drop-in replacement for sysvinit.
 
-%package doc
-Summary:        HTML documentation for systemd
-License:        LGPL-2.1-or-later
-%if %{with bootstrap}
-Conflicts:      systemd-doc
-Requires:       this-is-only-for-build-envs
-%else
-Supplements:    (systemd and patterns-base-documentation)
-%endif
-
-%description doc
-The HTML documentation for systemd.
-
 %package devel
 Summary:        Development files for libsystemd and libudev
 License:        LGPL-2.1-or-later
@@ -693,6 +680,14 @@ Have fun (at your own risk).
 
 %if %{without bootstrap}
 %lang_package
+
+%package doc
+Summary:        HTML documentation for systemd
+License:        LGPL-2.1-or-later
+Supplements:    (systemd and patterns-base-documentation)
+
+%description doc
+The HTML documentation for systemd.
 %endif
 
 %prep
@@ -1009,7 +1004,8 @@ tar -cO \
 %if %{without bootstrap}
 %find_lang systemd
 %else
-rm -f %{buildroot}%{_journalcatalogdir}/*
+rm -f  %{buildroot}%{_journalcatalogdir}/*
+rm -fr %{buildroot}%{_docdir}/systemd
 %endif
 
 # Don't drop %%pre section even if it becomes empty: the build process of
@@ -1320,10 +1316,6 @@ fi
 %include %{SOURCE203}
 %endif
 
-%files doc
-%defattr(-,root,root,-)
-%{_docdir}/systemd/
-
 %files devel
 %defattr(-,root,root,-)
 %license LICENSE.LGPL2.1
@@ -1356,6 +1348,10 @@ fi
 %if %{without bootstrap}
 %files lang -f systemd.lang
 %include %{SOURCE210}
+
+%files doc
+%defattr(-,root,root,-)
+%{_docdir}/systemd/
 %endif
 
 %if %{with journal_remote}
