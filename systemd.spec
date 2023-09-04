@@ -691,7 +691,9 @@ Currently this package contains: repart, oomd, measure, pcrphase and ukify.
 Have fun (at your own risk).
 %endif
 
+%if %{without bootstrap}
 %lang_package
+%endif
 
 %prep
 %autosetup -p1 -n systemd-v%{version}%{archive_version}
@@ -723,7 +725,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dxinitrcdir=%{xinitconfdir}/xinitrc.d \
         -Drpmmacrosdir=no \
         -Dcertificate-root=%{_sysconfdir}/pki/systemd \
-        -Dtranslations=true \
 %if %{with bootstrap}
         -Dbashcompletiondir=no \
         -Dzshcompletiondir=no \
@@ -758,6 +759,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dselinux=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
+        -Dtranslations=%{when_not bootstrap} \
         -Duserdb=%{when_not bootstrap} \
         \
         -Dcoredump=%{when coredump} \
@@ -1004,7 +1006,11 @@ tar -cO \
     -C test/ . | tar -xC %{buildroot}%{_testsuitedir}/integration-tests
 %endif
 
+%if %{without bootstrap}
 %find_lang systemd
+%else
+rm -f %{buildroot}%{_journalcatalogdir}/*
+%endif
 
 # Don't drop %%pre section even if it becomes empty: the build process of
 # installation images uses a hardcoded list of packages with a %%pre that needs
@@ -1347,8 +1353,10 @@ fi
 %include %{SOURCE208}
 %endif
 
+%if %{without bootstrap}
 %files lang -f systemd.lang
 %include %{SOURCE210}
+%endif
 
 %if %{with journal_remote}
 %files journal-remote

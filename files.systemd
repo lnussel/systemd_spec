@@ -205,9 +205,7 @@
 %{_datadir}/zsh/site-functions/_systemd-run
 %{_datadir}/zsh/site-functions/_systemd-tmpfiles
 %{_datadir}/zsh/site-functions/_timedatectl
-%endif
 %{_journalcatalogdir}/systemd.catalog
-%if %{without bootstrap}
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_systemd.so.2
 %endif
