@@ -39,6 +39,7 @@
 %global with_bootstrap 1
 %else
 %global mini %nil
+%bcond_without  apparmor
 %bcond_without  coredump
 %bcond_without  homed
 %bcond_without  importd
@@ -52,9 +53,11 @@
 %else
 %bcond_with     sd_boot
 %endif
+%bcond_without  selinux
 %bcond_without  sysvcompat
 %bcond_without  experimental
 %bcond_without  testsuite
+%bcond_without  utmp
 %endif
 
 # The following features are kept to ease migrations toward SLE. Their default
@@ -74,7 +77,9 @@ BuildRequires:  bpftool
 BuildRequires:  clang
 BuildRequires:  docbook-xsl-stylesheets
 BuildRequires:  kbd
+%if %{with apparmor}
 BuildRequires:  libapparmor-devel
+%endif
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libxslt-tools
 BuildRequires:  polkit
@@ -90,7 +95,9 @@ BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcre2-8)
 BuildRequires:  pkgconfig(libqrencode)
 BuildRequires:  pkgconfig(libseccomp) >= 2.3.1
+%if %{with selinux}
 BuildRequires:  pkgconfig(libselinux) >= 2.1.9
+%endif
 BuildRequires:  pkgconfig(libzstd)
 %endif
 BuildRequires:  fdupes
@@ -557,9 +564,11 @@ Recommends:     tpm2.0-tools
 %if %{with resolved}
 # Optional dep for knot needed by TEST-75-RESOLVED
 Recommends:     knot
+%if %{with selinux}
 # Optional deps needed by TEST-06-SELINUX (otherwise skipped)
 Recommends:     selinux-policy-devel
 Recommends:     selinux-policy-targeted
+%endif
 # The following deps on libs are for test-dlopen-so whereas the pkgconfig ones
 # are used by test-funtions to find the libs on the host and install them in the
 # image, see install_missing_libraries() for details.
@@ -703,6 +712,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dclock-valid-range-usec-max=946728000000000 \
         -Dadm-group=false \
         -Dwheel-group=false \
+        -Dutmp=%{when utmp} \
         -Ddefault-hierarchy=unified \
         -Ddefault-kill-user-processes=false \
         -Dpamconfdir=no \
@@ -729,7 +739,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         \
         -Dpstore=true \
         \
-        -Dapparmor=%{when_not bootstrap} \
+        -Dapparmor=%{when apparmor} \
         -Dbpf-framework=%{when_not bootstrap} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
@@ -741,7 +751,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dnss-myhostname=%{when_not bootstrap} \
         -Dnss-systemd=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
-        -Dselinux=%{when_not bootstrap} \
+        -Dselinux=%{when selinux} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \

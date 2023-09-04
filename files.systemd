@@ -380,8 +380,10 @@
 %{_mandir}/man8/systemd-tmpfiles.8.gz
 %{_mandir}/man8/systemd-update-done.8.gz
 %{_mandir}/man8/systemd-update-done.service.8.gz
+%if %{with utmp}
 %{_mandir}/man8/systemd-update-utmp.8.gz
 %{_mandir}/man8/systemd-update-utmp.service.8.gz
+%endif
 %{_mandir}/man8/systemd-user-sessions.8.gz
 %{_mandir}/man8/systemd-user-sessions.service.8.gz
 %{_mandir}/man8/systemd-userdbd.8.gz
@@ -420,7 +422,9 @@
 %{_systemd_util_dir}/systemd-timedated
 %{_systemd_util_dir}/systemd-update-done
 %{_systemd_util_dir}/systemd-update-helper
+%if %{with utmp}
 %{_systemd_util_dir}/systemd-update-utmp
+%endif
 %{_systemd_util_dir}/systemd-user-runtime-dir
 %{_systemd_util_dir}/systemd-user-sessions
 %if %{without bootstrap}
@@ -566,7 +570,9 @@
 %{_unitdir}/sysinit.target.wants/systemd-sysusers.service
 %{_unitdir}/sysinit.target.wants/systemd-tmpfiles-setup.service
 %{_unitdir}/sysinit.target.wants/systemd-update-done.service
+%if %{with utmp}
 %{_unitdir}/sysinit.target.wants/systemd-update-utmp.service
+%endif
 %{_unitdir}/syslog.socket
 %{_unitdir}/system-update-cleanup.service
 %{_unitdir}/system-update-pre.target
@@ -605,7 +611,9 @@
 %{_unitdir}/systemd-tmpfiles-clean.timer
 %{_unitdir}/systemd-tmpfiles-setup.service
 %{_unitdir}/systemd-update-done.service
+%if %{with utmp}
 %{_unitdir}/systemd-update-utmp.service
+%endif
 %{_unitdir}/systemd-user-sessions.service
 %if %{without bootstrap}
 %{_unitdir}/systemd-userdbd.service

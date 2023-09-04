@@ -13,7 +13,9 @@
 %{_mandir}/man8/systemd-initctl.socket.8.gz
 %{_mandir}/man8/systemd-rc-local-generator.8.gz
 %{_mandir}/man8/systemd-sysv-generator.8.gz
+%if %{with utmp}
 %{_mandir}/man8/systemd-update-utmp-runlevel.service.8.gz
+%endif
 %{_mandir}/man8/telinit.8.gz
 %{_sbindir}/runlevel
 %{_sbindir}/telinit
@@ -21,10 +23,14 @@
 %{_systemd_util_dir}/systemd-sysv-install
 %{_systemdgeneratordir}/systemd-rc-local-generator
 %{_systemdgeneratordir}/systemd-sysv-generator
+%if %{with utmp}
 %{_unitdir}/graphical.target.wants/systemd-update-utmp-runlevel.service
 %{_unitdir}/multi-user.target.wants/systemd-update-utmp-runlevel.service
+%endif
 %{_unitdir}/rc-local.service
+%if %{with utmp}
 %{_unitdir}/rescue.target.wants/systemd-update-utmp-runlevel.service
+%endif
 %{_unitdir}/runlevel0.target
 %{_unitdir}/runlevel1.target
 %{_unitdir}/runlevel2.target
@@ -35,7 +41,9 @@
 %{_unitdir}/sockets.target.wants/systemd-initctl.socket
 %{_unitdir}/systemd-initctl.service
 %{_unitdir}/systemd-initctl.socket
+%if %{with utmp}
 %{_unitdir}/systemd-update-utmp-runlevel.service
+%endif
 %if %{with split_usr}
 /sbin/runlevel
 /sbin/telinit
