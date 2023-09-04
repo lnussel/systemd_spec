@@ -74,3 +74,6 @@
 %{_tmpfilesdir}/systemd-resolve.conf
 %{_unitdir}/systemd-resolved.service
 %endif
+#
+/usr/share/dbus-1/interfaces/org.freedesktop.network1.DHCPv4Client.xml
+/usr/share/dbus-1/interfaces/org.freedesktop.network1.DHCPv6Client.xml
