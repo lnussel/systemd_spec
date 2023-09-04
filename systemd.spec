@@ -116,6 +116,10 @@ BuildRequires:  pkgconfig(libselinux) >= 2.1.9
 %endif
 BuildRequires:  pkgconfig(libzstd)
 %endif
+# those ones used to be optional
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  fdupes
 BuildRequires:  gperf
 BuildRequires:  libacl-devel
@@ -814,6 +818,8 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
         \
+        -Dxenctrl=disabled \
+	\
         -Dtests=%{when testsuite unsafe} \
         -Dinstall-tests=%{when testsuite}
 
