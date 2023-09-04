@@ -305,6 +305,7 @@ Requires:       filesystem
 Requires:       kmod
 Requires:       system-group-hardware
 Requires:       group(kvm)
+Requires:       group(lp)
 # The next dependency is also needed with file-triggers enabled due to the way
 # the libzypp default transaction backend works.
 Requires(pre):  group(kvm)
