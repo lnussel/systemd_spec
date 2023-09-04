@@ -35,23 +35,10 @@
 %define when_not()     %{expand:%%__when_not_%# %{*}}
 
 %if "%{flavor}" == "mini"
-%define mini -mini
-%bcond_without  bootstrap
-%bcond_with     coredump
-%bcond_with     homed
-%bcond_with     importd
-%bcond_with     journal_remote
-%bcond_with     machined
-%bcond_with     networkd
-%bcond_with     portabled
-%bcond_with     resolved
-%bcond_with     sd_boot
-%bcond_with     sysvcompat
-%bcond_with     experimental
-%bcond_with     testsuite
+%global mini -mini
+%global with_bootstrap 1
 %else
-%define mini %nil
-%bcond_with     bootstrap
+%global mini %nil
 %bcond_without  coredump
 %bcond_without  homed
 %bcond_without  importd
@@ -69,7 +56,9 @@
 %bcond_without  experimental
 %bcond_without  testsuite
 %endif
-# Kept to ease migrations toward SLE
+
+# The following features are kept to ease migrations toward SLE. Their default
+# value is independent of the build flavor.
 %bcond_without  filetriggers
 %bcond_with     split_usr
 
