@@ -82,9 +82,6 @@
 %{_unitdir}/systemd-sysupdate.service
 %{_unitdir}/systemd-sysupdate.timer
 ###
-/usr/sbin/mount.ddi
-/usr/share/man/man1/mount.ddi.1.gz
-#
 %{_systemd_util_dir}/systemd-bsod
 /usr/share/man/man8/systemd-bsod.8.gz
 /usr/bin/ukify
