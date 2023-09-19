@@ -1498,7 +1498,6 @@ fi
 
 %if %{with testsuite}
 %files testsuite
-%doc %{_testsuitedir}/integration-tests/README.testsuite
 %{_testsuitedir}
 %endif
 
