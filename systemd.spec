@@ -1497,7 +1497,6 @@ fi
 %if %{with testsuite}
 %files testsuite
 %defattr(-,root,root)
-%doc %{_testsuitedir}/integration-tests/README.testsuite
 %{_testsuitedir}
 %endif
 
