@@ -156,6 +156,7 @@
 %{_systemd_util_dir}/systemd-battery-check
 %if %{without bootstrap}
 %{_systemd_util_dir}/systemd-cryptsetup
+%{_bindir}/systemd-cryptsetup
 %endif
 %{_systemd_util_dir}/systemd-fsck
 %{_systemd_util_dir}/systemd-growfs
