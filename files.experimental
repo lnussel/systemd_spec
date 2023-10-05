@@ -90,3 +90,12 @@
 /usr/share/man/man3/sd_id128_get_app_specific.3.gz
 /usr/share/man/man8/systemd-bsod.service.8.gz
 /usr/share/man/man8/systemd-tmpfiles-setup-dev-early.service.8.gz
+###
+/usr/lib/systemd/system/sysinit.target.wants/systemd-tpm2-setup-early.service
+/usr/lib/systemd/system/sysinit.target.wants/systemd-tpm2-setup.service
+/usr/lib/systemd/system/systemd-tpm2-setup-early.service
+/usr/lib/systemd/system/systemd-tpm2-setup.service
+/usr/lib/systemd/systemd-tpm2-setup
+/usr/share/man/man8/systemd-tpm2-setup-early.service.8.gz
+/usr/share/man/man8/systemd-tpm2-setup.8.gz
+/usr/share/man/man8/systemd-tpm2-setup.service.8.gz
