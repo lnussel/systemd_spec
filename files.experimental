@@ -99,3 +99,24 @@
 /usr/share/man/man8/systemd-tpm2-setup-early.service.8.gz
 /usr/share/man/man8/systemd-tpm2-setup.8.gz
 /usr/share/man/man8/systemd-tpm2-setup.service.8.gz
+#
+/usr/bin/varlinkctl
+%dir /usr/lib/systemd/repart
+%dir /usr/lib/systemd/repart/definitions
+%dir /usr/lib/systemd/repart/definitions/confext.repart.d
+%dir /usr/lib/systemd/repart/definitions/portable.repart.d
+%dir /usr/lib/systemd/repart/definitions/sysext.repart.d
+/usr/lib/systemd/repart/definitions/confext.repart.d/10-root.conf
+/usr/lib/systemd/repart/definitions/confext.repart.d/20-root-verity.conf
+/usr/lib/systemd/repart/definitions/confext.repart.d/30-root-verity-sig.conf
+/usr/lib/systemd/repart/definitions/portable.repart.d/10-root.conf
+/usr/lib/systemd/repart/definitions/portable.repart.d/20-root-verity.conf
+/usr/lib/systemd/repart/definitions/portable.repart.d/30-root-verity-sig.conf
+/usr/lib/systemd/repart/definitions/sysext.repart.d/10-root.conf
+/usr/lib/systemd/repart/definitions/sysext.repart.d/20-root-verity.conf
+/usr/lib/systemd/repart/definitions/sysext.repart.d/30-root-verity-sig.conf
+/usr/lib/systemd/system/sockets.target.wants/systemd-pcrextend.socket
+/usr/lib/systemd/system/systemd-pcrextend.socket
+/usr/lib/systemd/system/systemd-pcrextend@.service
+
+/usr/share/man/man1/varlinkctl.1.gz
