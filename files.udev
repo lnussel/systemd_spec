@@ -349,3 +349,5 @@
 %if %{with split_usr}
 /sbin/udevadm
 %endif
+
+/usr/lib/udev/rules.d/60-persistent-storage-mtd.rules

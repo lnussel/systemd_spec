@@ -648,3 +648,5 @@
 /sbin/reboot
 /sbin/shutdown
 %endif
+#
+/usr/lib/systemd/systemd-executor
