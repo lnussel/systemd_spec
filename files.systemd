@@ -652,3 +652,5 @@
 #
 /usr/lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup-dev-early.service
 /usr/lib/systemd/system/systemd-tmpfiles-setup-dev-early.service
+#
+/usr/lib/systemd/systemd-executor
