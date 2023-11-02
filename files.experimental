@@ -121,3 +121,8 @@
 /usr/lib/systemd/system/systemd-pcrextend@.service
 
 /usr/share/man/man1/varlinkctl.1.gz
+
+#
+/usr/lib/systemd/system/sockets.target.wants/systemd-sysext.socket
+/usr/lib/systemd/system/systemd-sysext.socket
+/usr/lib/systemd/system/systemd-sysext@.service
