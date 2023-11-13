@@ -125,3 +125,46 @@
 /usr/lib/systemd/system/sockets.target.wants/systemd-sysext.socket
 /usr/lib/systemd/system/systemd-sysext.socket
 /usr/lib/systemd/system/systemd-sysext@.service
+#
+/usr/bin/systemd-vmspawn
+%dir /usr/lib/pcrlock.d
+/usr/lib/pcrlock.d/350-action-efi-application.pcrlock
+%dir /usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d
+/usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/300-0x00000000.pcrlock
+/usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/600-0xffffffff.pcrlock
+%dir /usr/lib/pcrlock.d/500-separator.pcrlock.d
+/usr/lib/pcrlock.d/500-separator.pcrlock.d/300-0x00000000.pcrlock
+/usr/lib/pcrlock.d/500-separator.pcrlock.d/600-0xffffffff.pcrlock
+%dir /usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d
+/usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/300-present.pcrlock
+/usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/600-absent.pcrlock
+/usr/lib/pcrlock.d/750-enter-initrd.pcrlock
+/usr/lib/pcrlock.d/800-leave-initrd.pcrlock
+/usr/lib/pcrlock.d/850-sysinit.pcrlock
+/usr/lib/pcrlock.d/900-ready.pcrlock
+/usr/lib/pcrlock.d/950-shutdown.pcrlock
+/usr/lib/pcrlock.d/990-final.pcrlock
+/usr/lib/systemd/system/storage-target-mode.target
+/usr/lib/systemd/system/systemd-pcrlock-file-system.service
+/usr/lib/systemd/system/systemd-pcrlock-firmware-code.service
+/usr/lib/systemd/system/systemd-pcrlock-firmware-config.service
+/usr/lib/systemd/system/systemd-pcrlock-machine-id.service
+/usr/lib/systemd/system/systemd-pcrlock-make-policy.service
+/usr/lib/systemd/system/systemd-pcrlock-secureboot-authority.service
+/usr/lib/systemd/system/systemd-pcrlock-secureboot-policy.service
+/usr/lib/systemd/system/systemd-storagetm.service
+/usr/lib/systemd/systemd-pcrlock
+/usr/lib/systemd/systemd-storagetm
+/usr/share/man/man1/systemd-vmspawn.1.gz
+/usr/share/man/man5/systemd.pcrlock.5.gz
+/usr/share/man/man5/systemd.pcrlock.d.5.gz
+/usr/share/man/man8/systemd-pcrlock-file-system.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-firmware-code.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-firmware-config.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-machine-id.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-make-policy.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-secureboot-authority.service.8.gz
+/usr/share/man/man8/systemd-pcrlock-secureboot-policy.service.8.gz
+/usr/share/man/man8/systemd-pcrlock.8.gz
+/usr/share/man/man8/systemd-storagetm.8.gz
+/usr/share/man/man8/systemd-storagetm.service.8.gz
