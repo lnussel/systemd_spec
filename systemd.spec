@@ -550,6 +550,16 @@ resolves hostnames via DNS.
 
 To activate this NSS module, you will need to include it in /etc/nsswitch.conf,
 see nss-resolve(8) manpage for more details.
+
+%package network-config-default
+Summary:        systemd network config files to make it default
+License:        LGPL-2.1-or-later
+Requires:       %{name}-network = %{version}-%{release}
+
+%description network-config-default
+Config files for systemd-networkd that enable networkd by default
+on all interfaces
+
 %endif
 
 %if %{with homed}
@@ -878,6 +888,7 @@ for the C APIs.
         -Dimportd=%{when importd} \
         -Dmachined=%{when machined} \
         -Dnetworkd=%{when networkd} \
+        -Ddefault-network=true \
         -Dportabled=%{when portabled} \
         -Dremote=%{when journal_remote} \
         -Dselinux=%{when selinux} \
@@ -1446,6 +1457,13 @@ fi
 %if %{with networkd} || %{with resolved}
 %files network
 %include %{SOURCE203}
+
+%files network-config-default
+%defattr(-,root,root)
+%{_systemd_util_dir}/network/80-auto-link-local.network
+%{_systemd_util_dir}/network/80-wifi-ap.network
+%{_systemd_util_dir}/network/80-wifi-station.network
+%{_systemd_util_dir}/network/89-ethernet.network
 %endif
 
 %files devel
