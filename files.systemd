@@ -650,3 +650,12 @@
 %endif
 #
 /usr/lib/systemd/systemd-executor
+#
+/usr/share/mime/packages/io.systemd.xml
+#
+/usr/lib/systemd/sshd_config.d/20-systemd-userdb.conf
+%dir /usr/etc/ssh
+%dir /usr/etc/ssh/sshd_config.d
+%dir /usr/lib/systemd/sshd_config.d
+/usr/etc/ssh/sshd_config.d/20-systemd-userdb.conf
+/usr/lib/tmpfiles.d/20-systemd-userdb.conf
