@@ -882,6 +882,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dxz=%{when_not bootstrap} \
         -Dzlib=%{when importd} \
         -Dzstd=%{when_not bootstrap} \
+        -Dsshdconfdir="/usr/etc/ssh/sshd_config.d/" \
         \
         -Dapparmor=%{when apparmor} \
         -Dcoredump=%{when coredump} \
