@@ -881,6 +881,7 @@ for the C APIs.
         -Dxz=%{when_not bootstrap} \
         -Dzlib=%{when importd} \
         -Dzstd=%{when_not bootstrap} \
+        -Dsshdconfdir="/usr/etc/ssh/sshd_config.d/" \
         \
         -Dapparmor=%{when apparmor} \
         -Dcoredump=%{when coredump} \
