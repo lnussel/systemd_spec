@@ -825,6 +825,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \
         -Duserdb=%{when_not bootstrap} \
+	-Dsshdconfdir="/usr/etc/ssh/sshd_config.d/" \
         \
         -Dcoredump=%{when coredump} \
         -Dhomed=%{when homed} \
