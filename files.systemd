@@ -656,3 +656,13 @@
 %{_unitdir}/user@.service.d/10-login-barrier.conf
 %{_unitdir}/user@0.service.d/10-login-barrier.conf
 %{xinitconfdir}/xinitrc.d/50-systemd-user.sh
+%if %{systemd_major} >= 256
+/usr/share/mime/packages/io.systemd.xml
+#
+/usr/lib/systemd/sshd_config.d/20-systemd-userdb.conf
+%dir /usr/etc/ssh
+%dir /usr/etc/ssh/sshd_config.d
+%dir /usr/lib/systemd/sshd_config.d
+/usr/etc/ssh/sshd_config.d/20-systemd-userdb.conf
+/usr/lib/tmpfiles.d/20-systemd-userdb.conf
+%endif
