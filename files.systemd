@@ -664,4 +664,8 @@
 %dir /usr/lib/systemd/sshd_config.d
 /usr/etc/ssh/sshd_config.d/20-systemd-userdb.conf
 /usr/lib/tmpfiles.d/20-systemd-userdb.conf
+#
+/usr/lib/systemd/system/sockets.target.wants/systemd-creds.socket
+/usr/lib/systemd/system/systemd-creds.socket
+/usr/lib/systemd/system/systemd-creds@.service
 %endif

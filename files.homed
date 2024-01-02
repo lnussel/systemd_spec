@@ -21,3 +21,5 @@
 %{_systemd_util_dir}/systemd-homework
 %{_unitdir}/systemd-homed-activate.service
 %{_unitdir}/systemd-homed.service
+/usr/lib/systemd/system/systemd-homed-firstboot.service
+/usr/share/man/man1/systemd-homed-firstboot.service.1.gz

@@ -167,3 +167,6 @@
 %{_mandir}/man8/systemd-tpm2-setup.8.gz
 %{_mandir}/man8/systemd-tpm2-setup.service.8.gz
 %endif
+#
+/usr/bin/uid0
+/usr/share/man/man1/uid0.1.gz
