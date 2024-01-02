@@ -144,3 +144,6 @@
 %{_unitdir}/systemd-tpm2-setup-early.service
 %{_unitdir}/systemd-tpm2-setup.service
 %endif
+#
+/usr/bin/uid0
+/usr/share/man/man1/uid0.1.gz
