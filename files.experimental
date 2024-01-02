@@ -169,3 +169,6 @@
 /usr/share/man/man8/systemd-pcrlock.8.gz
 /usr/share/man/man8/systemd-storagetm.8.gz
 /usr/share/man/man8/systemd-storagetm.service.8.gz
+#
+/usr/bin/uid0
+/usr/share/man/man1/uid0.1.gz
