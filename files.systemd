@@ -669,4 +669,6 @@
 /usr/lib/systemd/system/sockets.target.wants/systemd-creds.socket
 /usr/lib/systemd/system/systemd-creds.socket
 /usr/lib/systemd/system/systemd-creds@.service
+#
+/usr/share/polkit-1/actions/io.systemd.credentials.policy
 %endif
