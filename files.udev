@@ -390,3 +390,5 @@
 %{_unitdir}/veritysetup-pre.target
 %{_unitdir}/veritysetup.target
 %endif
+#
+/usr/share/man/man5/udev.conf.d.5.gz

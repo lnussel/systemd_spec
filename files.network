@@ -79,3 +79,9 @@
 %{_tmpfilesdir}/systemd-resolve.conf
 %{_unitdir}/systemd-resolved.service
 %endif
+#
+/usr/lib/systemd/network/80-6rd-tunnel.link
+/usr/lib/systemd/network/80-container-vb.link
+/usr/lib/systemd/network/80-container-ve.link
+/usr/lib/systemd/network/80-container-vz.link
+/usr/lib/systemd/network/80-vm-vt.link

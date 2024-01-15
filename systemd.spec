@@ -1064,6 +1064,8 @@ touch %{buildroot}%{_sysconfdir}/locale.conf
 touch %{buildroot}%{_sysconfdir}/machine-info
 touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
 
+rm -f %buildroot/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf
+
 %fdupes -s %{buildroot}%{_mandir}
 
 # Make sure to disable all services by default. The branding presets package
