@@ -672,4 +672,12 @@
 /usr/lib/systemd/system/systemd-creds@.service
 #
 /usr/share/polkit-1/actions/io.systemd.credentials.policy
+#
+%dir /usr/lib/systemd/ssh_config.d
+/usr/lib/systemd/ssh_config.d/20-systemd-ssh-proxy.conf
+/usr/lib/systemd/system-generators/systemd-ssh-generator
+/usr/lib/systemd/systemd-ssh-proxy
+/usr/lib/tmpfiles.d/20-systemd-ssh-generator.conf
+/usr/share/man/man1/systemd-ssh-proxy.1.gz
+/usr/share/man/man8/systemd-ssh-generator.8.gz
 %endif

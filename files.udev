@@ -354,3 +354,5 @@
 %if %{with split_usr}
 /sbin/udevadm
 %endif
+#
+/usr/share/man/man5/udev.conf.d.5.gz
