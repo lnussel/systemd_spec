@@ -607,6 +607,8 @@
 %{_unitdir}/systemd-exit.service
 %{_unitdir}/systemd-halt.service
 %{_unitdir}/systemd-hostnamed.service
+%{_unitdir}/systemd-hostnamed.socket
+/usr/lib/systemd/system/sockets.target.wants/systemd-hostnamed.socket
 %{_unitdir}/systemd-journal-catalog-update.service
 %{_unitdir}/systemd-journal-flush.service
 %{_unitdir}/systemd-journald-audit.socket
