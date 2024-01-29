@@ -120,6 +120,7 @@ BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  fdupes
 BuildRequires:  gperf
 BuildRequires:  libacl-devel
