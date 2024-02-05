@@ -781,3 +781,6 @@
 %{_mandir}/man3/udev_ref.3.gz
 %{_mandir}/man3/udev_unref.3.gz
 %endif
+###
+/usr/share/man/man3/sd_bus_creds_get_pidfd_dup.3.gz
+/usr/share/man/man3/sd_bus_creds_new_from_pidfd.3.gz
