@@ -862,6 +862,10 @@ mkdir -p %{buildroot}%{_modprobedir}
 mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
 %endif
 
+# Make sure /usr/lib/modules-load.d exists in udev(-mini)?, so other
+# packages can install modules without worry
+mkdir -p %{buildroot}%{_modulesloaddir}
+
 # Make sure we don't ship static enablement symlinks in /etc during
 # installation, presets should be honoured instead.
 rm -rf %{buildroot}%{_sysconfdir}/systemd/system/*.target.{requires,wants}
