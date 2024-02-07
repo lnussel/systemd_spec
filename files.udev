@@ -49,8 +49,6 @@
 %if %{without bootstrap}
 %{_datadir}/zsh/site-functions/_kernel-install
 %{_datadir}/zsh/site-functions/_udevadm
-%endif
-%if %{without bootstrap}
 %{_libdir}/cryptsetup/libcryptsetup-token-systemd-fido2.so
 %{_libdir}/cryptsetup/libcryptsetup-token-systemd-pkcs11.so
 %{_libdir}/cryptsetup/libcryptsetup-token-systemd-tpm2.so
@@ -120,6 +118,7 @@
 %{_mandir}/man8/systemd-suspend.service.8.gz
 %{_mandir}/man8/systemd-timesyncd.8.gz
 %{_mandir}/man8/systemd-timesyncd.service.8.gz
+%{_mandir}/man8/systemd-tmpfiles-setup-dev-early.service.8.gz
 %{_mandir}/man8/systemd-tmpfiles-setup-dev.service.8.gz
 %{_mandir}/man8/systemd-udev-settle.service.8.gz
 %{_mandir}/man8/systemd-udevd-control.socket.8.gz
@@ -141,8 +140,8 @@
 %endif
 %{_prefix}/lib/udev/ata_id
 %{_prefix}/lib/udev/cdrom_id
-# dmi_memory_id is only relevant on arches with DMI
 %ifarch %{arm} aarch64 %{ix86} x86_64 ia64 mips
+# dmi_memory_id is only relevant on arches with DMI
 %{_prefix}/lib/udev/dmi_memory_id
 %endif
 %{_prefix}/lib/udev/fido_id
@@ -294,6 +293,7 @@
 %{_unitdir}/sysinit.target.wants/systemd-modules-load.service
 %endif
 %{_unitdir}/sysinit.target.wants/systemd-random-seed.service
+%{_unitdir}/sysinit.target.wants/systemd-tmpfiles-setup-dev-early.service
 %{_unitdir}/sysinit.target.wants/systemd-tmpfiles-setup-dev.service
 %{_unitdir}/sysinit.target.wants/systemd-udev-trigger.service
 %{_unitdir}/sysinit.target.wants/systemd-udevd.service
@@ -326,6 +326,7 @@
 %{_unitdir}/systemd-suspend-then-hibernate.service
 %{_unitdir}/systemd-suspend.service
 %{_unitdir}/systemd-timesyncd.service
+%{_unitdir}/systemd-tmpfiles-setup-dev-early.service
 %{_unitdir}/systemd-tmpfiles-setup-dev.service
 %{_unitdir}/systemd-udev-settle.service
 %{_unitdir}/systemd-udev-trigger.service
