@@ -18,7 +18,6 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define min_kernel_version 4.5
 %define archive_version +suse.10.gb53f364c26
 
 %define _testsuitedir %{_systemd_util_dir}/tests
