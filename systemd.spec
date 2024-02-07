@@ -65,6 +65,20 @@
 %bcond_with     filetriggers
 %bcond_with     split_usr
 
+# We stopped shipping main config files in /etc but we have to restore any
+# config files that might have been backed up by rpm during the migration of the
+# main config files from /etc to /usr. This needs to be done in %%posttrans
+# because the .rpmsave files are created when the *old* package version is
+# removed. This is not needed by ALP and will be dropped from Factory near the
+# end of 2024.
+%define restore_rpmsave() \
+if [ -e %{_sysconfdir}/%{1}.rpmsave ] && [ ! -e %{_sysconfdir}/%{1} ]; then \
+        echo >&2 "Restoring %{_sysconfdir}/%1. Please consider moving your customizations in a drop-in instead." \
+        echo >&2 "For more details, visit https://en.opensuse.org/Systemd#Configuration." \
+        mv -v %{_sysconfdir}/%{1}.rpmsave %{_sysconfdir}/%{1} || : \
+fi \
+%{nil}
+
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        254.5
@@ -814,8 +828,18 @@ install -m0755 -D %{SOURCE3} %{buildroot}/%{_systemd_util_dir}/systemd-update-he
 install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
 %endif
 
-mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
-mkdir -p % %{buildroot}%{_sysconfdir}/systemd/nspawn
+# For some reasons, upstream refuses to add a new build option (see pr#29244)
+# for customizing the installation path of main config files. However we want to
+# store them in /usr/lib so we don't encourage users to modify them while they
+# still can serve as templates.
+for f in %{buildroot}%{_sysconfdir}/systemd/*.conf; do
+	mv $f %{buildroot}%{_systemd_util_dir}/
+done
+for f in %{buildroot}%{_sysconfdir}/udev/*.conf; do
+	# Drop-ins are currently not supported by udevd.
+	[ $(basename $f) = "udev.conf" ] && continue
+	mv $f %{buildroot}%{_prefix}/lib/udev/
+done
 
 # Install the fixlets
 mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
@@ -885,6 +909,26 @@ rm -f %{buildroot}%{_environmentdir}/99-environment.conf
 # Remove README file in init.d as (SUSE) rpm requires executable files in this
 # directory... oh well.
 rm -f %{buildroot}%{_sysconfdir}/init.d/README
+
+# Create *.conf.d/ directories to encourage users to create drop-ins when they
+# need to customize some setting defaults.
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/coredump.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journal-remote.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journal-upload.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/logind.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/networkd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/oomd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/pstore.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/resolved.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/sleep.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/system.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/timesyncd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/user.confd.d
+mkdir -p %{buildroot}%{_sysconfdir}/udev/iocost.conf.d
+
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/network
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/nspawn
 
 # This dir must be owned (and thus created) by systemd otherwise the build
 # system will complain. This is odd since we simply own a ghost file in it...
@@ -1049,6 +1093,12 @@ journalctl --update-catalog || :
 %systemd_postun_with_restart systemd-timedated.service
 %systemd_postun_with_restart systemd-userdbd.service
 
+%posttrans
+%restore_rpmsave systemd/journald.conf
+%restore_rpmsave systemd/logind.conf
+%restore_rpmsave systemd/system.conf
+%restore_rpmsave systemd/user.conf
+
 %pre -n udev%{?mini}
 # Units listed below can be enabled at installation accoding to their preset
 # setting.
@@ -1103,6 +1153,10 @@ fi
 
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
+%restore_rpmsave systemd/pstore.conf
+%restore_rpmsave systemd/sleep.conf
+%restore_rpmsave systemd/timesyncd.conf
+%restore_rpmsave udev/iocost.conf
 
 %ldconfig_scriptlets -n libsystemd0%{?mini}
 %ldconfig_scriptlets -n libudev%{?mini}1
@@ -1133,6 +1187,9 @@ fi
 %post coredump
 %if %{without filetriggers}
 %sysusers_create systemd-coredump.conf
+
+%posttrans coredump
+%restore_rpmsave systemd/coredump.conf
 %endif
 %endif
 
@@ -1160,6 +1217,10 @@ fi
 %systemd_postun_with_restart systemd-journal-gatewayd.service
 %systemd_postun_with_restart systemd-journal-remote.service
 %systemd_postun_with_restart systemd-journal-upload.service
+
+%posttrans journal-remote
+%restore_rpmsave systemd/journal-remote.conf
+%restore_rpmsave systemd/journal-upload.conf
 %endif
 
 %if %{with networkd} || %{with resolved}
@@ -1208,6 +1269,10 @@ fi
 %ldconfig
 %systemd_postun systemd-resolved.service
 %endif
+
+%posttrans network
+%restore_rpmsave systemd/networkd.conf
+%restore_rpmsave systemd/resolved.conf
 %endif
 
 %if %{with homed}
@@ -1266,6 +1331,9 @@ fi
 %postun experimental
 %systemd_postun systemd-homed.service
 %systemd_postun systemd-oomd.service systemd-oomd.socket
+
+%posttrans experimental
+%restore_rpmsave systemd/oomd.conf
 %endif
 
 # File trigger definitions
