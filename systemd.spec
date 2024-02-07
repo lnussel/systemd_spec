@@ -1153,7 +1153,9 @@ fi
 
 %if %{with coredump}
 %post coredump
+%if %{without filetriggers}
 %sysusers_create systemd-coredump.conf
+%endif
 %endif
 
 %if %{with journal_remote}
@@ -1164,7 +1166,9 @@ fi
 
 %post journal-remote
 # Assume that all files shipped by systemd-journal-remove are owned by root.
+%if %{without filetriggers}
 %sysusers_create systemd-remote.conf
+%endif
 %systemd_post systemd-journal-gatewayd.service
 %systemd_post systemd-journal-remote.service
 %systemd_post systemd-journal-upload.service
@@ -1271,7 +1275,9 @@ fi
 %systemd_pre systemd-oomd.service systemd-oomd.socket
 
 %post experimental
+%if %{without filetriggers}
 %sysusers_create systemd-oom.conf
+%endif
 %systemd_post systemd-homed.service
 %systemd_post systemd-oomd.service systemd-oomd.socket
 
