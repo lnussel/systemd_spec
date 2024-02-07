@@ -209,7 +209,6 @@ Source212:      files.portable
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
-Patch2:         0001-conf-parser-introduce-early-drop-ins.patch
 Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
 Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
