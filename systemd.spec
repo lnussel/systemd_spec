@@ -727,8 +727,9 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %if %{without sysvcompat}
         -Dsysvinit-path= \
         -Dsysvrcnd-path= \
-%endif
+%else
         -Drc-local=/etc/init.d/boot.local \
+%endif
         -Dcreate-log-dirs=false \
         -Ddebug-shell=/bin/bash \
         \
