@@ -1008,16 +1008,15 @@ rm -fr %{buildroot}%{_docdir}/systemd
 # installation images uses a hardcoded list of packages with a %%pre that needs
 # to be run during the build and complains if it can't find one.
 %pre
-if [ $1 -gt 1 ]; then
-        # We keep these just in case we're upgrading from an old version that
-        # was missing one of these units. During package installation, these
-        # macros are NOPs for the main package (the branding preset package
-        # takes care of applying the presets in its %%posttrans in this case).
-        %systemd_pre remote-fs.target
-        %systemd_pre getty@.service
-        %systemd_pre systemd-journald-audit.socket
-        %systemd_pre systemd-userdbd.service
-fi
+# We don't really need to enable these units explicitely since during
+# installation `systemctl preset-all` is executed at the end of the install
+# transaction by the branding preset package. However it might be needed when
+# upgrading from a previous version of systemd that didn't ship one of these
+# units.
+%systemd_pre remote-fs.target
+%systemd_pre getty@.service
+%systemd_pre systemd-journald-audit.socket
+%systemd_pre systemd-userdbd.service
 
 %post
 if [ $1 -eq 1 ]; then
@@ -1054,13 +1053,11 @@ systemd-tmpfiles --create || :
 journalctl --update-catalog || :
 %endif
 
-if [ $1 -gt 1 ]; then
-        # See comments for %%systemd_pre in %%pre.
-        %systemd_post remote-fs.target
-        %systemd_post getty@.service
-        %systemd_post systemd-journald-audit.socket
-        %systemd_post systemd-userdbd.service
-fi
+# See the comment in %%pre about why we need to call %%systemd_pre.
+%systemd_post remote-fs.target
+%systemd_post getty@.service
+%systemd_post systemd-journald-audit.socket
+%systemd_post systemd-userdbd.service
 
 # Run the hacks/fixups to clean up the old stuff left by (very) old versions of
 # systemd.
