@@ -1100,6 +1100,7 @@ fi
 %preun -n udev%{?mini}
 %systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
 %systemd_preun systemd-pstore.service
+%systemd_preun systemd-timesyncd.service
 
 %postun -n udev%{?mini}
 %regenerate_initrd_post
