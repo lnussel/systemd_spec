@@ -151,6 +151,7 @@ Requires(post): pam-config >= 0.79-5
 Recommends:     libpcre2-8-0
 Recommends:     libbpf0
 %endif
+Provides:       group(systemd-journal)
 Conflicts:      filesystem < 11.5
 Conflicts:      mkinitrd < 2.7.0
 Provides:       sbin_init
