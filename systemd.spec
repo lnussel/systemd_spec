@@ -785,7 +785,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %if %{with sd_boot}
         -Dukify=%{when experimental} \
 %else
-        -Dukify=no \
+        -Dukify=false \
 %endif
         \
         -Dtests=%{when testsuite unsafe} \
