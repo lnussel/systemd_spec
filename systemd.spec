@@ -1126,11 +1126,8 @@ fi
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
 
-%post -n libudev%{?mini}1 -p %ldconfig
-%post -n libsystemd0%{?mini} -p %ldconfig
-
-%postun -n libudev%{?mini}1 -p %ldconfig
-%postun -n libsystemd0%{?mini} -p %ldconfig
+%ldconfig_scriptlets -n libsystemd0%{?mini}
+%ldconfig_scriptlets -n libudev%{?mini}1
 
 %if %{with machined}
 %pre container
@@ -1140,17 +1137,17 @@ fi
 %systemd_preun machines.target
 
 %postun container
-%systemd_postun machines.target
 %ldconfig
+%systemd_postun machines.target
 %endif
 
 %post container
 %if %{with machined}
+%ldconfig
 %if %{without filetriggers}
 %tmpfiles_create systemd-nspawn.conf
 %endif
 %systemd_post machines.target
-%ldconfig
 %{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
 %endif
 
