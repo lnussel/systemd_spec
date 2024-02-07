@@ -922,7 +922,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/systemd/resolved.conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/sleep.conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system.conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/timesyncd.conf.d
-mkdir -p %{buildroot}%{_sysconfdir}/systemd/user.confd.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/user.conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/udev/iocost.conf.d
 
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/network
