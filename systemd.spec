@@ -440,7 +440,7 @@ see nss-mymachines(8) manpage for more details.
 
 %if %{with networkd} || %{with resolved}
 %package network
-Summary:        systemd network and Network Name Resolution managers
+Summary:        Systemd Network And Network Name Resolution Managers
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
@@ -1204,7 +1204,10 @@ fi
 %endif
 %if %{with resolved}
 %ldconfig
+%if %{without filetriggers}
 %sysusers_create systemd-resolve.conf
+%tmpfiles_create systemd-resolve.conf
+%endif
 %systemd_post systemd-resolved.service
 %endif
 
