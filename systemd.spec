@@ -782,6 +782,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Doomd=%{when experimental} \
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
+        -Dukify=%{when experimental} \
         \
         -Dtests=%{when testsuite unsafe} \
         -Dinstall-tests=%{when testsuite}
