@@ -306,7 +306,9 @@ URL:            http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
 Requires:       filesystem
+%if %{without bootstrap}
 Requires:       kmod
+%endif
 Requires:       system-group-hardware
 Requires:       group(kvm)
 Requires:       group(lp)
