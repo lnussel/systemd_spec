@@ -18,7 +18,7 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define archive_version +suse.17.gce08cd5f66
+%define archive_version +suse.21.g071ac409a0
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
