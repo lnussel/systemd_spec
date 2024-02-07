@@ -108,9 +108,6 @@ BuildRequires:  libmount-devel >= 2.27.1
 BuildRequires:  meson >= 0.53.2
 BuildRequires:  pam-devel
 BuildRequires:  python3-Jinja2
-# regenerate_initrd_post macro is expanded during build, hence this BR. Also
-# this macro was introduced since version 12.4.
-BuildRequires:  suse-module-tools >= 12.4
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
 
@@ -307,6 +304,8 @@ Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
 Requires(postun):coreutils
+# 'regenerate_initrd_post' macro is expanded during build, hence this BR.
+BuildRequires:  suse-module-tools
 %if %{without bootstrap}
 BuildRequires:  pkgconfig(libcryptsetup) >= 1.6.0
 BuildRequires:  pkgconfig(libkmod) >= 15
