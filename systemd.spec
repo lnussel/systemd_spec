@@ -761,6 +761,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dhtml=%{when_not bootstrap} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
+        -Dkmod=%{when_not bootstrap} \
         -Dlibcryptsetup-plugins=%{when_not bootstrap} \
         -Dman=%{when_not bootstrap} \
         -Dnss-myhostname=%{when_not bootstrap} \
