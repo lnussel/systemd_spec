@@ -183,6 +183,8 @@ Source207:      files.experimental
 Source208:      files.coredump
 Source209:      files.homed
 Source210:      files.lang
+Source211:      files.journal-remote
+Source212:      files.portable
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -1336,22 +1338,7 @@ fi
 %if %{with journal_remote}
 %files journal-remote
 %defattr(-, root, root)
-%config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
-%config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
-%{_unitdir}/systemd-journal-gatewayd.*
-%{_unitdir}/systemd-journal-remote.*
-%{_unitdir}/systemd-journal-upload.*
-%{_systemd_util_dir}/systemd-journal-gatewayd
-%{_systemd_util_dir}/systemd-journal-remote
-%{_systemd_util_dir}/systemd-journal-upload
-%{_sysusersdir}/systemd-remote.conf
-%{_mandir}/man5/journal-remote.conf*
-%{_mandir}/man5/journal-upload.conf*
-%{_mandir}/man8/systemd-journal-gatewayd.*
-%{_mandir}/man8/systemd-journal-remote.*
-%{_mandir}/man8/systemd-journal-upload.*
-%{_datadir}/systemd/gatewayd
-%ghost %dir %{_localstatedir}/log/journal/remote
+%include %{SOURCE211}
 %endif
 
 %if %{with homed}
@@ -1363,17 +1350,7 @@ fi
 %if %{with portabled}
 %files portable
 %defattr(-,root,root)
-%{_bindir}/portablectl
-%{_systemd_util_dir}/systemd-portabled
-%{_systemd_util_dir}/portable
-%{_unitdir}/systemd-portabled.service
-%{_unitdir}/dbus-org.freedesktop.portable1.service
-%{_datadir}/dbus-1/system.d/org.freedesktop.portable1.conf
-%{_datadir}/dbus-1/system-services/org.freedesktop.portable1.service
-%{_datadir}/polkit-1/actions/org.freedesktop.portable1.policy
-%{_tmpfilesdir}/portables.conf
-%{_mandir}/man*/portablectl*
-%{_mandir}/man*/systemd-portabled*
+%include %{SOURCE212}
 %endif
 
 %if %{with testsuite}
