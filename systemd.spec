@@ -933,8 +933,8 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
 
 %fdupes -s %{buildroot}%{_mandir}
 
-# Make sure to disable all services by default. The SUSE branding presets
-# package takes care of defining the right policies.
+# Make sure to disable all services by default. The branding presets package
+# takes care of defining the SUSE policies.
 rm -f %{buildroot}%{_presetdir}/*.preset
 echo 'disable *' >%{buildroot}%{_presetdir}/99-default.preset
 echo 'disable *' >%{buildroot}%{_userpresetdir}/99-default.preset
