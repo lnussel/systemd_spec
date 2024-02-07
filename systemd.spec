@@ -171,7 +171,6 @@ Source4:        systemd-sysv-install
 Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
 Source7:        triggers.systemd
-Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
 Source100:      fixlet-container-post.sh
@@ -922,10 +921,6 @@ mkdir -p %{buildroot}%{_userpresetdir}
 mkdir -p %{buildroot}%{_systemd_system_env_generator_dir}
 mkdir -p %{buildroot}%{_systemd_user_env_generator_dir}
 
-# Ensure after.local wrapper is called.
-install -m 644 %{SOURCE11} %{buildroot}%{_unitdir}/
-ln -s ../after-local.service %{buildroot}%{_unitdir}/multi-user.target.wants/
-
 # ghost directories with default permissions.
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
 
@@ -1069,7 +1064,7 @@ if [ $1 -gt 1 ]; then
         %systemd_post systemd-userdbd.socket
 fi
 
-# Run the hacks/fixups to clean up old garbages left by (very) old versions of
+# Run the hacks/fixups to clean up the old stuff left by (very) old versions of
 # systemd.
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh $1 || :
 
