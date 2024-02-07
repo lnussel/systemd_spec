@@ -1068,7 +1068,10 @@ fi
 
 %postun
 # Avoid restarting logind until fixed upstream (issue #1163)
+%systemd_postun_with_restart systemd-hostnamed.service
 %systemd_postun_with_restart systemd-journald.service
+%systemd_postun_with_restart systemd-localed.service
+%systemd_postun_with_restart systemd-timedated.service
 %systemd_postun_with_restart systemd-userdbd.service
 
 %pre -n udev%{?mini}
