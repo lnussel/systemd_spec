@@ -62,7 +62,7 @@
 
 # The following features are kept to ease migrations toward SLE. Their default
 # value is independent of the build flavor.
-%bcond_without  filetriggers
+%bcond_with     filetriggers
 %bcond_with     split_usr
 
 Name:           systemd%{?mini}
