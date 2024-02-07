@@ -1015,7 +1015,6 @@ if [ $1 -gt 1 ]; then
         # takes care of applying the presets in its %%posttrans in this case).
         %systemd_pre remote-fs.target
         %systemd_pre getty@.service
-        %systemd_pre systemd-timesyncd.service
         %systemd_pre systemd-journald-audit.socket
         %systemd_pre systemd-userdbd.service
 fi
@@ -1059,7 +1058,6 @@ if [ $1 -gt 1 ]; then
         # See comments for %%systemd_pre in %%pre.
         %systemd_post remote-fs.target
         %systemd_post getty@.service
-        %systemd_post systemd-timesyncd.service
         %systemd_post systemd-journald-audit.socket
         %systemd_post systemd-userdbd.service
 fi
@@ -1071,7 +1069,6 @@ fi
 %postun
 # Avoid restarting logind until fixed upstream (issue #1163)
 %systemd_postun_with_restart systemd-journald.service
-%systemd_postun_with_restart systemd-timesyncd.service
 %systemd_postun_with_restart systemd-userdbd.service
 
 %pre -n udev%{?mini}
@@ -1079,6 +1076,7 @@ fi
 # setting.
 %systemd_pre remote-cryptsetup.target
 %systemd_pre systemd-pstore.service
+%systemd_pre systemd-timesyncd.service
 
 # New installations uses the last compat symlink generation number (currently at
 # 2), which basically disables all compat symlinks. On old systems, the file
@@ -1097,6 +1095,7 @@ fi
 %endif
 %systemd_post remote-cryptsetup.target
 %systemd_post systemd-pstore.service
+%systemd_post systemd-timesyncd.service
 
 %preun -n udev%{?mini}
 %systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
@@ -1120,6 +1119,7 @@ fi
 # frame where no socket will be listening to the events sent by the kernel, no
 # matter if the socket unit is restarted in first or not.
 %systemd_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
+%systemd_postun_with_restart systemd-timesyncd.service
 %systemd_postun systemd-pstore.service
 
 %posttrans -n udev%{?mini}
