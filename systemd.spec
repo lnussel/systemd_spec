@@ -221,7 +221,7 @@ drop-in replacement for sysvinit.
 Summary:        Development files for libsystemd and libudev
 License:        LGPL-2.1-or-later
 Requires:       libsystemd0%{?mini} = %{version}-%{release}
-Requires:       libudev1%{?mini} = %{version}-%{release}
+Requires:       libudev%{?mini}1 = %{version}-%{release}
 Requires:       systemd-rpm-macros
 Provides:       libudev%{?mini}-devel = %{version}-%{release}
 Obsoletes:      libudev%{?mini}-devel < %{version}-%{release}
@@ -350,7 +350,7 @@ mounted filesystem to full size of the underlying block device.
 
 This package shouldn't be necessary in containers.
 
-%package -n libudev1%{?mini}
+%package -n libudev%{?mini}1
 Summary:        Dynamic library to access udev device information
 License:        LGPL-2.1-or-later
 %if %{with bootstrap}
@@ -360,7 +360,7 @@ Provides:       libudev1 = %{version}-%{release}
 Requires:       this-is-only-for-build-envs
 %endif
 
-%description -n libudev1%{?mini}
+%description -n libudev%{?mini}1
 This package contains the dynamic library libudev, which provides
 access to udev device information
 
@@ -1130,7 +1130,7 @@ fi
 %regenerate_initrd_posttrans
 
 %ldconfig_scriptlets -n libsystemd0%{?mini}
-%ldconfig_scriptlets -n libudev1%{?mini}
+%ldconfig_scriptlets -n libudev%{?mini}1
 
 %if %{with machined}
 %pre container
@@ -1339,7 +1339,7 @@ fi
 %{_libdir}/libsystemd.so.0
 %{_libdir}/libsystemd.so.0.37.0
 
-%files -n libudev1%{?mini}
+%files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
