@@ -1017,7 +1017,7 @@ if [ $1 -gt 1 ]; then
         %systemd_pre getty@.service
         %systemd_pre systemd-timesyncd.service
         %systemd_pre systemd-journald-audit.socket
-        %systemd_pre systemd-userdbd.socket
+        %systemd_pre systemd-userdbd.service
 fi
 
 %post
@@ -1061,7 +1061,7 @@ if [ $1 -gt 1 ]; then
         %systemd_post getty@.service
         %systemd_post systemd-timesyncd.service
         %systemd_post systemd-journald-audit.socket
-        %systemd_post systemd-userdbd.socket
+        %systemd_post systemd-userdbd.service
 fi
 
 # Run the hacks/fixups to clean up the old stuff left by (very) old versions of
@@ -1160,26 +1160,26 @@ fi
 
 %if %{with journal_remote}
 %pre journal-remote
-%systemd_pre systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_pre systemd-journal-remote.socket systemd-journal-remote.service
+%systemd_pre systemd-journal-gatewayd.service
+%systemd_pre systemd-journal-remote.service
 %systemd_pre systemd-journal-upload.service
 
 %post journal-remote
 # Assume that all files shipped by systemd-journal-remove are owned by root.
 %sysusers_create systemd-remote.conf
-%systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_post systemd-journal-remote.socket systemd-journal-remote.service
+%systemd_post systemd-journal-gatewayd.service
+%systemd_post systemd-journal-remote.service
 %systemd_post systemd-journal-upload.service
 
 %preun journal-remote
-%systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_preun systemd-journal-remote.socket systemd-journal-remote.service
+%systemd_preun systemd-journal-gatewayd.service
+%systemd_preun systemd-journal-remote.service
 %systemd_preun systemd-journal-upload.service
 
 %postun journal-remote
-%systemd_postun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_postun systemd-journal-remote.socket systemd-journal-remote.service
-%systemd_postun systemd-journal-upload.service
+%systemd_postun_with_restart systemd-journal-gatewayd.service
+%systemd_postun_with_restart systemd-journal-remote.service
+%systemd_postun_with_restart systemd-journal-upload.service
 %endif
 
 %if %{with networkd} || %{with resolved}
