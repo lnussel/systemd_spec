@@ -463,8 +463,8 @@
 %{_tmpfilesdir}/credstore.conf
 %{_tmpfilesdir}/journal-nocow.conf
 %{_tmpfilesdir}/provision.conf
-%{_tmpfilesdir}/suse.conf
 %{_tmpfilesdir}/systemd-nologin.conf
+%{_tmpfilesdir}/systemd-suse.conf
 %{_tmpfilesdir}/systemd-tmp.conf
 %{_tmpfilesdir}/systemd.conf
 %{_tmpfilesdir}/x11.conf

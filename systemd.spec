@@ -942,26 +942,12 @@ rm -f %{buildroot}%{_presetdir}/*.preset
 echo 'disable *' >%{buildroot}%{_presetdir}/99-default.preset
 echo 'disable *' >%{buildroot}%{_userpresetdir}/99-default.preset
 
-# The current situation with tmpfiles snippets dealing with the generic paths is
-# pretty messy currently because:
-#
-#  1. filesystem package wants to define the generic paths and some of them
-#     conflict with the definition given by systemd in var.conf, see
-#     bsc#1078466.
-#
-#  2. /tmp and /var/tmp are not cleaned by default on SUSE distros (fate#314974)
-#     which conflict with tmp.conf.
-#
-#  3. There're also legacy.conf which defines various legacy paths which either
-#     don't match the SUSE defaults or don't look needed at all.
-#
-#  4. We don't want the part in etc.conf which imports default upstream files in
-#     empty /etc, see below.
-#
-# To keep things simple, we remove all these tmpfiles config files but still
-# keep the remaining paths that still don't have a better home in suse.conf.
+# Most of the entries for the generic paths are defined by filesystem package as
+# the definitions used by SUSE distros diverged from the ones defined by
+# systemd. For lack of a better place some (deprecated) paths are still shipped
+# along with the systemd package.
 rm -f %{buildroot}%{_tmpfilesdir}/{etc,home,legacy,tmp,var}.conf
-install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
+install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/systemd-suse.conf
 
 # The content of the files shipped by systemd doesn't match the
 # defaults used by SUSE. Don't ship those files but leave the decision
