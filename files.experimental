@@ -180,3 +180,8 @@
 /usr/bin/systemd-vpick
 /usr/share/man/man1/systemd-vpick.1.gz
 /usr/share/man/man7/systemd.v.7.gz
+#
+/usr/lib/systemd/system/sockets.target.wants/systemd-pcrlock.socket
+/usr/lib/systemd/system/systemd-pcrlock.socket
+/usr/lib/systemd/system/systemd-pcrlock@.service
+/usr/lib/systemd/system/systemd-vmspawn@.service

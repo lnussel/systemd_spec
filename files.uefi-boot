@@ -31,3 +31,7 @@
 %{_unitdir}/systemd-bless-boot.service
 %{_unitdir}/systemd-boot-random-seed.service
 %{_unitdir}/systemd-boot-update.service
+#
+/usr/lib/systemd/system/sockets.target.wants/systemd-bootctl.socket
+/usr/lib/systemd/system/systemd-bootctl.socket
+/usr/lib/systemd/system/systemd-bootctl@.service
