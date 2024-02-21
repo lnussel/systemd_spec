@@ -147,9 +147,10 @@ Requires(post): coreutils
 Requires(post): findutils
 Requires(post): systemd-presets-branding
 Requires(post): pam-config >= 0.79-5
-# This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
+# These weak dependencies because some features are optional and enabled at
+# runtime with the presence of the relevant libs.
 Recommends:     libpcre2-8-0
-Recommends:     libbpf0
+Recommends:     libbpf1
 %endif
 Provides:       group(systemd-journal)
 Conflicts:      filesystem < 11.5
