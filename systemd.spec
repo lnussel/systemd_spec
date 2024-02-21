@@ -622,7 +622,7 @@ Requires:       make
 Requires:       mtools
 Requires:       netcat
 Requires:       python3-pexpect
-Requires:       qemu-kvm
+Requires:       qemu
 Requires:       quota
 Requires:       socat
 Requires:       squashfs
