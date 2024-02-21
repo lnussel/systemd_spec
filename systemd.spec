@@ -18,7 +18,7 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define archive_version +suse.22.g67a5ac1043
+%define archive_version +suse.23.gfa94ab006d
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -79,7 +79,7 @@ fi \
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        254.8
+Version:        254.9
 Release:        0
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
