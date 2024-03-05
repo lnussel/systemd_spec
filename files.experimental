@@ -185,3 +185,6 @@
 /usr/lib/systemd/system/systemd-pcrlock.socket
 /usr/lib/systemd/system/systemd-pcrlock@.service
 /usr/lib/systemd/system/systemd-vmspawn@.service
+#
+/usr/bin/importctl
+/usr/share/man/man1/importctl.1.gz
