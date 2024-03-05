@@ -18,9 +18,9 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define systemd_version    254.9
+%define systemd_version    255.3
 %define systemd_release    0
-%define archive_version    +suse.30.g31f1148f75
+%define archive_version    +suse.15.g96edf7ad18
 
 %if 0%{?_build_in_place}
 # Allow users to specify the version and the release when building the rpm in
@@ -240,9 +240,6 @@ Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 Patch5001:      5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
 Patch5002:      5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
 # jsc#PED-5659
-Patch5003:      5003-cgroup-rename-TasksMax-structure-to-CGroupTasksMax.patch
-Patch5004:      5004-bus-print-properties-ignore-CGROUP_LIMIT_MAX-for-Mem.patch
-Patch5005:      5005-bus-print-properties-prettify-more-unset-properties.patch
 Patch5006:      5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
 Patch5007:      5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
 Patch5008:      5008-test-Add-effective-cgroup-limits-testing.patch
@@ -638,6 +635,7 @@ Requires:       attr
 Requires:       binutils
 Requires:       busybox-static
 Requires:       cryptsetup
+Requires:       dhcp-client
 Requires:       dosfstools
 Requires:       jq
 Requires:       libcap-progs
@@ -648,6 +646,7 @@ Requires:       libtss2-rc0
 Requires:       lz4
 Requires:       make
 Requires:       mtools
+Requires:       net-tools-deprecated
 Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu
@@ -659,6 +658,9 @@ Requires:       pkgconfig(libfido2)
 Requires:       pkgconfig(tss2-esys)
 Requires:       pkgconfig(tss2-mu)
 Requires:       pkgconfig(tss2-rc)
+%if %{with sd_boot}
+Requires:       systemd-boot
+%endif
 %if %{with coredump}
 Requires:       systemd-coredump
 %endif
@@ -786,31 +788,59 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Ddebug-shell=/bin/bash \
         \
         -Dbump-proc-sys-fs-nr-open=false \
+        -Ddbus=false \
+        -Ddefault-network=false \
+        -Dglib=false \
         -Dgshadow=false \
         -Dldconfig=false \
+        -Dlibidn=false \
         -Dsmack=false \
+        -Dxenctrl=false \
+        -Dxkbcommon=false \
         \
         -Dpstore=true \
         \
-        -Dapparmor=%{when apparmor} \
+        -Daudit=%{when_not bootstrap} \
         -Dbpf-framework=%{when_not bootstrap} \
+        -Dbzip2=%{when importd} \
         -Defi=%{when_not bootstrap} \
         -Delfutils=%{when_not bootstrap} \
+        -Dfdisk=%{when_not bootstrap} \
+        -Dgcrypt=%{when_not bootstrap} \
+        -Dgnutls=%{when_not bootstrap} \
         -Dhtml=%{when_not bootstrap} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
+        -Dlibfido2=%{when_not bootstrap} \
+        -Dlibidn2=%{when resolved} \
+        -Dlibiptc=%{when_not bootstrap} \
+        -Dlz4=%{when_not bootstrap} \
+        -Dqrencode=%{when_not bootstrap} \
         -Dkmod=%{when_not bootstrap} \
+        -Dlibcryptsetup=%{when_not bootstrap} \
         -Dlibcryptsetup-plugins=%{when_not bootstrap} \
+        -Dlibcurl=%{when_not bootstrap} \
         -Dman=%{when_not bootstrap} \
+        -Dmicrohttpd=%{when journal_remote} \
         -Dnss-myhostname=%{when_not bootstrap} \
+        -Dnss-mymachines=%{when machined} \
+        -Dnss-resolve=%{when resolved} \
         -Dnss-systemd=%{when_not bootstrap} \
+        -Dopenssl=%{when_not bootstrap} \
+        -Dp11kit=%{when_not bootstrap} \
+        -Dpasswdqc=%{when_not bootstrap} \
+        -Dpwquality=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
-        -Dselinux=%{when selinux} \
+        -Dstoragetm=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
         -Dtranslations=%{when_not bootstrap} \
         -Duserdb=%{when_not bootstrap} \
+        -Dxz=%{when_not bootstrap} \
+        -Dzlib=%{when importd} \
+        -Dzstd=%{when_not bootstrap} \
         \
+        -Dapparmor=%{when apparmor} \
         -Dcoredump=%{when coredump} \
         -Dhomed=%{when homed} \
         -Dimportd=%{when importd} \
@@ -818,6 +848,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dnetworkd=%{when networkd} \
         -Dportabled=%{when portabled} \
         -Dremote=%{when journal_remote} \
+        -Dselinux=%{when selinux} \
         \
         -Dbootloader=%{when sd_boot} \
         -Defi-color-highlight="black,green" \
@@ -842,6 +873,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %else
         -Dukify=false \
 %endif
+        -Dvmspawn=%{when experimental} \
         \
         -Dtests=%{when testsuite unsafe} \
         -Dinstall-tests=%{when testsuite}
@@ -1057,6 +1089,7 @@ tar -cO \
 %if %{without bootstrap}
 %find_lang systemd
 %else
+rm -f  %{buildroot}%{_bindir}/varlinkctl
 rm -f  %{buildroot}%{_journalcatalogdir}/*
 rm -fr %{buildroot}%{_docdir}/systemd
 %endif
