@@ -18,14 +18,14 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define archive_version +suse.28.g53e2aaaf9d
+%define archive_version +suse.30.g31f1148f75
 
 %if 0%{?version_override}
 %define systemd_major      %version_override
 %define systemd_minor      %{nil}
 %else
 %define systemd_major      254
-%define systemd_minor      1
+%define systemd_minor      9
 %endif
 
 %define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
@@ -93,7 +93,7 @@ fi \
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 # Allow users to specify the version and release when building the rpm by
-# setting the %version_override and %release_override macros.
+# setting the %%version_override and %%release_override macros.
 Version:        %systemd_version
 Release:        %systemd_release
 Summary:        A System and Session Manager
@@ -377,11 +377,11 @@ Conflicts:      udev
 Provides:       udev = %{version}-%{release}
 %endif
 %if %{with upstream}
-BuildRequires:  pkgconfig(xencontrol)
-BuildRequires:  pkgconfig(libarchive)
-BuildRequires:  pkgconfig(xkbcommon)
-BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(xencontrol)
+BuildRequires:  pkgconfig(xkbcommon)
 Recommends:     libarchive13
 Recommends:     libxkbcommon0
 %endif
