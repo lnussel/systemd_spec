@@ -18,18 +18,20 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define archive_version +suse.30.g31f1148f75
+%define systemd_version    254.9
+%define systemd_release    0
+%define archive_version    +suse.30.g31f1148f75
 
-%if 0%{?version_override}
-%define systemd_major      %version_override
-%define systemd_minor      %{nil}
-%else
-%define systemd_major      254
-%define systemd_minor      9
+%if 0%{?_build_in_place}
+# Allow users to specify the version and the release when building the rpm in
+# place. When not provided we look for the version in meson.version (introduced
+# in v256).
+%define systemd_version    %{?version_override}%{!?version_override:%(cat meson.version)}
+%define systemd_release    %{?release_override}%{!?release_override:0}
+%define archive_version    %{nil}
 %endif
 
-%define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
-%define systemd_release    %{?release_override}%{!?release_override:0}
+%define systemd_major      %{sub %systemd_version 1 3}
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
@@ -92,8 +94,6 @@ fi \
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-# Allow users to specify the version and release when building the rpm by
-# setting the %%version_override and %%release_override macros.
 Version:        %systemd_version
 Release:        %systemd_release
 Summary:        A System and Session Manager
@@ -750,7 +750,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 
 %meson \
         -Dmode=release \
-        -Dversion-tag=%{version}%[%{without upstream}?"%{archive_version}":""] \
+        -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
         -Drootprefix=/usr \
