@@ -18,10 +18,6 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define systemd_version    255.3
-%define systemd_release    0
-%define archive_version    +suse.15.g96edf7ad18
-
 %if 0%{?_build_in_place}
 # Allow users to specify the version and the release when building the rpm in
 # place. When not provided we look for the version in meson.version (introduced
@@ -29,6 +25,11 @@
 %define systemd_version    %{?version_override}%{!?version_override:%(cat meson.version)}
 %define systemd_release    %{?release_override}%{!?release_override:0}
 %define archive_version    %{nil}
+%else
+# Fallback required for OBS source validator
+%define systemd_version    255.3
+%define systemd_release    0
+%define archive_version    +suse.15.g96edf7ad18
 %endif
 
 %define systemd_major      %{sub %systemd_version 1 3}
