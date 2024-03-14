@@ -539,7 +539,8 @@
 %{_unitdir}/printer.target
 %{_unitdir}/proc-sys-fs-binfmt_misc.automount
 %{_unitdir}/proc-sys-fs-binfmt_misc.mount
-%{_unitdir}/quotaon.service
+%{_unitdir}/quotaon-root.service
+%{_unitdir}/quotaon@.service
 %{_unitdir}/reboot.target
 %{_unitdir}/remote-fs-pre.target
 %{_unitdir}/remote-fs.target
