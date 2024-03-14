@@ -85,3 +85,5 @@
 /usr/lib/systemd/network/80-container-ve.link
 /usr/lib/systemd/network/80-container-vz.link
 /usr/lib/systemd/network/80-vm-vt.link
+#
+/usr/lib/systemd/system/systemd-networkd-persistent-storage.service
