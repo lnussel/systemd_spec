@@ -681,4 +681,5 @@
 /usr/lib/tmpfiles.d/20-systemd-ssh-generator.conf
 /usr/share/man/man1/systemd-ssh-proxy.1.gz
 /usr/share/man/man8/systemd-ssh-generator.8.gz
+/usr/lib/systemd/system/ssh-access.target
 %endif
