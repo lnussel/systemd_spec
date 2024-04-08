@@ -26,10 +26,9 @@
 %define systemd_release    %{?release_override}%{!?release_override:0}
 %define archive_version    %{nil}
 %else
-# Fallback required for OBS source validator
-%define systemd_version    255.3
+%define systemd_version    255.4
 %define systemd_release    0
-%define archive_version    +suse.16.g3986ed5117
+%define archive_version    +suse.17.gbe772961ad
 %endif
 
 %define systemd_major      %{sub %systemd_version 1 3}
