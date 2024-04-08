@@ -1,5 +1,5 @@
 #
-# spec file for package systemd
+# spec file
 #
 # Copyright (c) 2024 SUSE LLC
 #
@@ -29,7 +29,7 @@
 # Fallback required for OBS source validator
 %define systemd_version    255.3
 %define systemd_release    0
-%define archive_version    +suse.15.g96edf7ad18
+%define archive_version    +suse.16.g3986ed5117
 %endif
 
 %define systemd_major      %{sub %systemd_version 1 3}
@@ -347,7 +347,7 @@ Requires:       group(lp)
 Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
-Requires(postun): coreutils
+Requires(postun):coreutils
 # 'regenerate_initrd_post' macro is expanded during build, hence this BR.
 BuildRequires:  suse-module-tools
 %if %{without bootstrap}
@@ -639,6 +639,7 @@ Requires:       busybox-static
 Requires:       cryptsetup
 Requires:       dhcp-client
 Requires:       dosfstools
+Requires:       iproute2
 Requires:       jq
 Requires:       libcap-progs
 Requires:       libfido2
@@ -648,7 +649,6 @@ Requires:       libtss2-rc0
 Requires:       lz4
 Requires:       make
 Requires:       mtools
-Requires:       net-tools-deprecated
 Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu
