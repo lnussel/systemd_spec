@@ -1,5 +1,5 @@
 #
-# spec file
+# spec file for package systemd
 #
 # Copyright (c) 2024 SUSE LLC
 #
@@ -215,6 +215,7 @@ Source209:      files.homed
 Source210:      files.lang
 Source211:      files.journal-remote
 Source212:      files.portable
+Source213:      files.devel-doc
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -346,7 +347,7 @@ Requires:       group(lp)
 Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
-Requires(postun):coreutils
+Requires(postun): coreutils
 # 'regenerate_initrd_post' macro is expanded during build, hence this BR.
 BuildRequires:  suse-module-tools
 %if %{without bootstrap}
@@ -734,12 +735,12 @@ Have fun (at your own risk).
 %lang_package
 
 %package doc
-Summary:        HTML documentation for systemd
+Summary:        Additional documentation or doc formats for systemd
 License:        LGPL-2.1-or-later
-Supplements:    (systemd and patterns-base-documentation)
 
 %description doc
-The HTML documentation for systemd.
+A HTML version of the systemd documentation, plus the manual pages
+for the C APIs.
 %endif
 
 %prep
@@ -1411,55 +1412,45 @@ fi
 %endif
 
 %files
-%defattr(-,root,root)
 %include %{SOURCE200}
 
 %files -n udev%{?mini}
-%defattr(-,root,root)
 %include %{SOURCE201}
 
 %if %{with sd_boot}
 %files boot
-%defattr(-,root,root)
 %include %{SOURCE206}
 %endif
 
 %files container
-%defattr(-,root,root)
 %include %{SOURCE202}
 
 %if %{with networkd} || %{with resolved}
 %files network
-%defattr(-,root,root)
 %include %{SOURCE203}
 %endif
 
 %files devel
-%defattr(-,root,root,-)
 %license LICENSE.LGPL2.1
 %include %{SOURCE204}
 
 %if %{with sysvcompat}
 %files sysvcompat
-%defattr(-,root,root,-)
 %include %{SOURCE205}
 %endif
 
 %files -n libsystemd0%{?mini}
-%defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
 %{_libdir}/libsystemd.so.0.*.0
 
 %files -n libudev%{?mini}1
-%defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
 %{_libdir}/libudev.so.1.7.*
 
 %if %{with coredump}
 %files coredump
-%defattr(-,root,root)
 %include %{SOURCE208}
 %endif
 
@@ -1468,38 +1459,33 @@ fi
 %include %{SOURCE210}
 
 %files doc
-%defattr(-,root,root,-)
 %{_docdir}/systemd/
+%include %{SOURCE213}
 %endif
 
 %if %{with journal_remote}
 %files journal-remote
-%defattr(-, root, root)
 %include %{SOURCE211}
 %endif
 
 %if %{with homed}
 %files homed
-%defattr(-,root,root)
 %include %{SOURCE209}
 %endif
 
 %if %{with portabled}
 %files portable
-%defattr(-,root,root)
 %include %{SOURCE212}
 %endif
 
 %if %{with testsuite}
 %files testsuite
-%defattr(-,root,root)
 %doc %{_testsuitedir}/integration-tests/README.testsuite
 %{_testsuitedir}
 %endif
 
 %if %{with experimental}
 %files experimental
-%defattr(-,root,root)
 %include %{SOURCE207}
 %endif
 
