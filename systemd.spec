@@ -76,7 +76,6 @@
 # The following features are kept to ease migrations toward SLE. Their default
 # value is independent of the build flavor.
 %bcond_without  filetriggers
-%bcond_with     split_usr
 
 # We stopped shipping main config files in /etc but we have to restore any
 # config files that might have been backed up by rpm during the migration of the
@@ -225,10 +224,10 @@ Source213:      files.devel-doc
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
-Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
+Patch:          0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
-Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
-Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
+Patch:          0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
+Patch:          0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
 
 %if %{without upstream}
@@ -238,14 +237,14 @@ Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # very few cases, some stuff might be broken in upstream and need to be fixed or
 # worked around quickly. In these cases, the patches are added temporarily and
 # will be removed as soon as a proper fix will be merged by upstream.
-Patch5001:      5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
-Patch5002:      5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
+Patch:          5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
+Patch:          5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
 # jsc#PED-5659
-Patch5006:      5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
-Patch5007:      5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
-Patch5008:      5008-test-Add-effective-cgroup-limits-testing.patch
-Patch5009:      5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
-Patch5010:      5010-cgroup-Rename-effective-limits-internal-table.patch
+Patch:          5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
+Patch:          5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
+Patch:          5008-test-Add-effective-cgroup-limits-testing.patch
+Patch:          5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
+Patch:          5010-cgroup-Rename-effective-limits-internal-table.patch
 
 %endif
 
@@ -755,10 +754,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dmode=release \
         -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
-%if %{with split_usr}
-        -Drootprefix=/usr \
-        -Dsplit-usr=true \
-%endif
         -Dconfigfiledir=/usr/lib \
         -Dsplit-bin=true \
         -Dsystem-uid-max=499 \
@@ -911,27 +906,6 @@ mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
 install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
-
-%if %{with split_usr}
-mkdir -p %{buildroot}/{bin,sbin}
-# Legacy paths
-ln -s ../usr/bin/udevadm %{buildroot}/sbin/
-ln -s ../usr/bin/systemctl %{buildroot}/bin/
-
-ln -s ../usr/lib/systemd/systemd %{buildroot}/sbin/init
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/reboot
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/halt
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/shutdown
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/poweroff
-# Legacy sysvinit tools
-%if %{with sysvcompat}
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/telinit
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/runlevel
-%endif
-# kmod keeps insisting on using /lib/modprobe.d only.
-mkdir -p %{buildroot}%{_modprobedir}
-mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
-%endif
 
 # Make sure /usr/lib/modules-load.d exists in udev(-mini)?, so other
 # packages can install modules without worry
