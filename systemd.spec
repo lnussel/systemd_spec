@@ -224,6 +224,7 @@ Source213:      files.devel-doc
 # only relevant for SUSE distros. Special rewards for those who will manage to
 # get rid of one of them !
 #
+Patch:          0001-Drop-support-for-efivar-SystemdOptions.patch
 Patch:          0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
 Patch:          0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
