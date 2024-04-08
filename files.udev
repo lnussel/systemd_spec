@@ -359,6 +359,3 @@
 %{_unitdir}/veritysetup-pre.target
 %{_unitdir}/veritysetup.target
 %endif
-%if %{with split_usr}
-/sbin/udevadm
-%endif
