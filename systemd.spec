@@ -999,6 +999,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/udev/iocost.conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/network
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/nspawn
 
+mkdir -p %{buildroot}%{_sysconfdir}/sysusers.d/
+
 # This dir must be owned (and thus created) by systemd otherwise the build
 # system will complain. This is odd since we simply own a ghost file in it...
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
