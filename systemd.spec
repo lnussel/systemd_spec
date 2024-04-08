@@ -28,7 +28,7 @@
 %else
 %define systemd_version    255.4
 %define systemd_release    0
-%define archive_version    +suse.17.gbe772961ad
+%define archive_version    +suse.22.g56b53b17bc
 %endif
 
 %define systemd_major      %{sub %systemd_version 1 3}
@@ -231,7 +231,6 @@ Patch:          0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
 
 %if %{without upstream}
-
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
 # very few cases, some stuff might be broken in upstream and need to be fixed or
@@ -239,13 +238,6 @@ Patch:          0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # will be removed as soon as a proper fix will be merged by upstream.
 Patch:          5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
 Patch:          5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
-# jsc#PED-5659
-Patch:          5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
-Patch:          5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
-Patch:          5008-test-Add-effective-cgroup-limits-testing.patch
-Patch:          5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
-Patch:          5010-cgroup-Rename-effective-limits-internal-table.patch
-
 %endif
 
 %description
