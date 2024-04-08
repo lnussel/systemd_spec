@@ -342,6 +342,8 @@ Requires(postun):coreutils
 # 'regenerate_initrd_post' macro is expanded during build, hence this BR.
 BuildRequires:  suse-module-tools
 %if %{without bootstrap}
+# fdisk is a build requirement for repart
+BuildRequires:  pkgconfig(fdisk)
 BuildRequires:  pkgconfig(libcryptsetup) >= 1.6.0
 BuildRequires:  pkgconfig(libkmod) >= 15
 # Enable fido2 and tpm supports in systemd-cryptsetup, systemd-enroll. However
@@ -701,8 +703,6 @@ Summary:        Experimental systemd features
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
-# fdisk is a build requirement for repart
-BuildRequires:  pkgconfig(fdisk)
 
 %description experimental
 This package contains optional extra services that are considered as previews
@@ -717,7 +717,8 @@ change without the usual backwards-compatibility promises.
 Components that turn out to be stable and considered as fully supported will be
 merged into the main package or moved into a dedicated package.
 
-Currently this package contains: repart, oomd, measure, pcrphase and ukify.
+Currently this package contains: bsod, oomd, measure, pcrextend, pcrlock,
+storagetm, sysupdate, tpm2-setup, userwork and ukify.
 
 Have fun (at your own risk).
 %endif
@@ -820,6 +821,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dpasswdqc=%{when_not bootstrap} \
         -Dpwquality=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
+        -Drepart=%{when_not bootstrap} \
         -Dstoragetm=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
@@ -855,7 +857,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dresolve=%{when resolved} \
         \
         -Doomd=%{when experimental} \
-        -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
 %if %{with sd_boot}
         -Dukify=%{when experimental} \
