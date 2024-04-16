@@ -392,3 +392,4 @@
 %endif
 #
 /usr/share/man/man5/udev.conf.d.5.gz
+/usr/lib/systemd/system/systemd-udev-load-credentials.service
