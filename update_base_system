@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+cd systemd_spec-base_system
+b=$(git branch --show-current)
+vt=$(git describe --tags)
+v="${vt#base_system-}"
+if [ "$b" != "base_system" ]; then
+	echo "must be in base_system branch"
+	exit 1
+fi
+if [ "$v" = "$vt" ]; then
+	echo "missing base_system tag"
+	exit 1
+fi
+v2=$(osc api /source/Base:System/systemd| sed -ne '/directory/s/.* rev="\([0-9]*\)".*/\1/p')
+if [ "$v" = "$v2" ]; then
+	echo "no update"
+	exit 1
+fi
+#git checkout -b "base_system-$v2"
+prj=Base:System bash ../updatefactory $v $v2
