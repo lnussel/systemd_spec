@@ -328,7 +328,10 @@ Requires:       %{name} = %{version}-%{release}
 %systemd_requires
 Requires:       filesystem
 %if %{without bootstrap}
+# kmod executable is needed by kmod-static-nodes.service
 Requires:       kmod
+# By v256 libkmod will be dlopen()ed.
+Requires:       libkmod
 %endif
 Requires:       system-group-hardware
 Requires:       group(kvm)
@@ -729,6 +732,7 @@ Have fun (at your own risk).
 %package doc
 Summary:        Additional documentation or doc formats for systemd
 License:        LGPL-2.1-or-later
+BuildArch:      noarch
 
 %description doc
 A HTML version of the systemd documentation, plus the manual pages
