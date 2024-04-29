@@ -15,8 +15,8 @@
 %{_datadir}/dbus-1/system.d/org.freedesktop.oom1.conf
 %{_datadir}/zsh/site-functions/_oomctl
 %{_mandir}/man1/oomctl.1.gz
-%if %{with sd_boot}
 %{_mandir}/man1/systemd-measure.1.gz
+%if %{with sd_boot}
 %{_mandir}/man1/ukify.1.gz
 %endif
 %{_mandir}/man5/oomd.conf.5.gz
@@ -27,12 +27,12 @@
 %{_mandir}/man8/systemd-oomd.8.gz
 %{_mandir}/man8/systemd-oomd.service.8.gz
 %if %{with sd_boot}
+%{_mandir}/man8/systemd-pcrextend.8.gz
 %{_mandir}/man8/systemd-pcrfs-root.service.8.gz
 %{_mandir}/man8/systemd-pcrfs@.service.8.gz
 %{_mandir}/man8/systemd-pcrmachine.service.8.gz
 %{_mandir}/man8/systemd-pcrphase-initrd.service.8.gz
 %{_mandir}/man8/systemd-pcrphase-sysinit.service.8.gz
-%{_mandir}/man8/systemd-pcrextend.8.gz
 %{_mandir}/man8/systemd-pcrphase.service.8.gz
 %endif
 %{_mandir}/man8/systemd-repart.8.gz
@@ -48,9 +48,7 @@
 %{_systemd_util_dir}/oomd.conf
 %{_systemd_util_dir}/system/initrd-root-fs.target.wants/systemd-repart.service
 %{_systemd_util_dir}/system/sysinit.target.wants/systemd-repart.service
-%if %{with sd_boot}
 %{_systemd_util_dir}/systemd-measure
-%endif
 %{_systemd_util_dir}/systemd-oomd
 %if %{with sd_boot}
 %{_systemd_util_dir}/systemd-pcrextend
@@ -59,6 +57,7 @@
 %{_systemd_util_dir}/systemd-userwork
 %if %{with sd_boot}
 %{_systemd_util_dir}/ukify
+%{_bindir}/ukify
 %endif
 %{_sysusersdir}/systemd-oom.conf
 %if %{with sd_boot}
@@ -82,96 +81,95 @@
 %{_unitdir}/systemd-sysupdate-reboot.timer
 %{_unitdir}/systemd-sysupdate.service
 %{_unitdir}/systemd-sysupdate.timer
-###
+
+%{_prefix}/lib/pcrlock.d/350-action-efi-application.pcrlock
+%{_prefix}/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/300-0x00000000.pcrlock
+%{_prefix}/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/600-0xffffffff.pcrlock
+%{_prefix}/lib/pcrlock.d/500-separator.pcrlock.d/300-0x00000000.pcrlock
+%{_prefix}/lib/pcrlock.d/500-separator.pcrlock.d/600-0xffffffff.pcrlock
+%{_prefix}/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/300-present.pcrlock
+%{_prefix}/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/600-absent.pcrlock
+%{_prefix}/lib/pcrlock.d/750-enter-initrd.pcrlock
+%{_prefix}/lib/pcrlock.d/800-leave-initrd.pcrlock
+%{_prefix}/lib/pcrlock.d/850-sysinit.pcrlock
+%{_prefix}/lib/pcrlock.d/900-ready.pcrlock
+%{_prefix}/lib/pcrlock.d/950-shutdown.pcrlock
+%{_prefix}/lib/pcrlock.d/990-final.pcrlock
+%{_mandir}/man5/systemd.pcrlock.5.gz
+%{_mandir}/man5/systemd.pcrlock.d.5.gz
+%{_mandir}/man8/systemd-pcrlock-file-system.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-firmware-code.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-firmware-config.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-machine-id.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-make-policy.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-secureboot-authority.service.8.gz
+%{_mandir}/man8/systemd-pcrlock-secureboot-policy.service.8.gz
+%{_mandir}/man8/systemd-pcrlock.8.gz
+%if %{with sd_boot}
+%{_unitdir}/systemd-pcrextend.socket
+%{_unitdir}/systemd-pcrextend@.service
+%{_unitdir}/sockets.target.wants/systemd-pcrextend.socket
+%{_unitdir}/systemd-pcrlock-file-system.service
+%{_unitdir}/systemd-pcrlock-firmware-code.service
+%{_unitdir}/systemd-pcrlock-firmware-config.service
+%{_unitdir}/systemd-pcrlock-machine-id.service
+%{_unitdir}/systemd-pcrlock-make-policy.service
+%{_unitdir}/systemd-pcrlock-secureboot-authority.service
+%{_unitdir}/systemd-pcrlock-secureboot-policy.service
+%endif
+%{_systemd_util_dir}/systemd-pcrlock
+
+%{_systemd_util_dir}/repart/definitions/confext.repart.d/10-root.conf
+%{_systemd_util_dir}/repart/definitions/confext.repart.d/20-root-verity.conf
+%{_systemd_util_dir}/repart/definitions/confext.repart.d/30-root-verity-sig.conf
+%{_systemd_util_dir}/repart/definitions/portable.repart.d/10-root.conf
+%{_systemd_util_dir}/repart/definitions/portable.repart.d/20-root-verity.conf
+%{_systemd_util_dir}/repart/definitions/portable.repart.d/30-root-verity-sig.conf
+%{_systemd_util_dir}/repart/definitions/sysext.repart.d/10-root.conf
+%{_systemd_util_dir}/repart/definitions/sysext.repart.d/20-root-verity.conf
+%{_systemd_util_dir}/repart/definitions/sysext.repart.d/30-root-verity-sig.conf
+
+%{_mandir}/man8/systemd-storagetm.8.gz
+%{_mandir}/man8/systemd-storagetm.service.8.gz
+%{_unitdir}/systemd-storagetm.service
+%{_unitdir}/storage-target-mode.target
+%{_systemd_util_dir}/systemd-storagetm
+
+%{_unitdir}/initrd.target.wants/systemd-bsod.service
 %{_systemd_util_dir}/systemd-bsod
-/usr/share/man/man8/systemd-bsod.8.gz
-/usr/bin/ukify
-/usr/lib/systemd/system/initrd.target.wants/systemd-bsod.service
-/usr/lib/systemd/system/systemd-bsod.service
-/usr/share/man/man3/sd_id128_get_app_specific.3.gz
-/usr/share/man/man8/systemd-bsod.service.8.gz
-/usr/share/man/man8/systemd-tmpfiles-setup-dev-early.service.8.gz
-###
-/usr/lib/systemd/system/sysinit.target.wants/systemd-tpm2-setup-early.service
-/usr/lib/systemd/system/sysinit.target.wants/systemd-tpm2-setup.service
-/usr/lib/systemd/system/systemd-tpm2-setup-early.service
-/usr/lib/systemd/system/systemd-tpm2-setup.service
-/usr/lib/systemd/systemd-tpm2-setup
-/usr/share/man/man8/systemd-tpm2-setup-early.service.8.gz
-/usr/share/man/man8/systemd-tpm2-setup.8.gz
-/usr/share/man/man8/systemd-tpm2-setup.service.8.gz
-#
-/usr/bin/varlinkctl
-%dir /usr/lib/systemd/repart
-%dir /usr/lib/systemd/repart/definitions
-%dir /usr/lib/systemd/repart/definitions/confext.repart.d
-%dir /usr/lib/systemd/repart/definitions/portable.repart.d
-%dir /usr/lib/systemd/repart/definitions/sysext.repart.d
-/usr/lib/systemd/repart/definitions/confext.repart.d/10-root.conf
-/usr/lib/systemd/repart/definitions/confext.repart.d/20-root-verity.conf
-/usr/lib/systemd/repart/definitions/confext.repart.d/30-root-verity-sig.conf
-/usr/lib/systemd/repart/definitions/portable.repart.d/10-root.conf
-/usr/lib/systemd/repart/definitions/portable.repart.d/20-root-verity.conf
-/usr/lib/systemd/repart/definitions/portable.repart.d/30-root-verity-sig.conf
-/usr/lib/systemd/repart/definitions/sysext.repart.d/10-root.conf
-/usr/lib/systemd/repart/definitions/sysext.repart.d/20-root-verity.conf
-/usr/lib/systemd/repart/definitions/sysext.repart.d/30-root-verity-sig.conf
-/usr/lib/systemd/system/sockets.target.wants/systemd-pcrextend.socket
-/usr/lib/systemd/system/systemd-pcrextend.socket
-/usr/lib/systemd/system/systemd-pcrextend@.service
+%{_unitdir}/systemd-bsod.service
+%{_mandir}/man8/systemd-bsod.8.gz
+%{_mandir}/man8/systemd-bsod.service.8.gz
 
-/usr/share/man/man1/varlinkctl.1.gz
+%{_bindir}/varlinkctl
+%{_mandir}/man1/varlinkctl.1.gz
 
+%{_bindir}/systemd-vmspawn
+%{_mandir}/man1/systemd-vmspawn.1.gz
+
+%dir %{_prefix}/lib/pcrlock.d
+%dir %{_prefix}/lib/pcrlock.d/400-secureboot-separator.pcrlock.d
+%dir %{_prefix}/lib/pcrlock.d/500-separator.pcrlock.d
+%dir %{_prefix}/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d
+%dir %{_systemd_util_dir}/repart
+%dir %{_systemd_util_dir}/repart/definitions
+%dir %{_systemd_util_dir}/repart/definitions/confext.repart.d
+%dir %{_systemd_util_dir}/repart/definitions/portable.repart.d
+%dir %{_systemd_util_dir}/repart/definitions/sysext.repart.d
+
+%if %{with sd_boot}
+%{_unitdir}/sysinit.target.wants/systemd-tpm2-setup-early.service
+%{_unitdir}/sysinit.target.wants/systemd-tpm2-setup.service
+%{_unitdir}/systemd-tpm2-setup-early.service
+%{_unitdir}/systemd-tpm2-setup.service
+%{_systemd_util_dir}/systemd-tpm2-setup
+%{_mandir}/man8/systemd-tpm2-setup-early.service.8.gz
+%{_mandir}/man8/systemd-tpm2-setup.8.gz
+%{_mandir}/man8/systemd-tpm2-setup.service.8.gz
+%endif
 #
-/usr/lib/systemd/system/sockets.target.wants/systemd-sysext.socket
-/usr/lib/systemd/system/systemd-sysext.socket
-/usr/lib/systemd/system/systemd-sysext@.service
-#
-/usr/bin/systemd-vmspawn
-%dir /usr/lib/pcrlock.d
-/usr/lib/pcrlock.d/350-action-efi-application.pcrlock
-%dir /usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d
-/usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/300-0x00000000.pcrlock
-/usr/lib/pcrlock.d/400-secureboot-separator.pcrlock.d/600-0xffffffff.pcrlock
-%dir /usr/lib/pcrlock.d/500-separator.pcrlock.d
-/usr/lib/pcrlock.d/500-separator.pcrlock.d/300-0x00000000.pcrlock
-/usr/lib/pcrlock.d/500-separator.pcrlock.d/600-0xffffffff.pcrlock
-%dir /usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d
-/usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/300-present.pcrlock
-/usr/lib/pcrlock.d/700-action-efi-exit-boot-services.pcrlock.d/600-absent.pcrlock
-/usr/lib/pcrlock.d/750-enter-initrd.pcrlock
-/usr/lib/pcrlock.d/800-leave-initrd.pcrlock
-/usr/lib/pcrlock.d/850-sysinit.pcrlock
-/usr/lib/pcrlock.d/900-ready.pcrlock
-/usr/lib/pcrlock.d/950-shutdown.pcrlock
-/usr/lib/pcrlock.d/990-final.pcrlock
-/usr/lib/systemd/system/storage-target-mode.target
-/usr/lib/systemd/system/systemd-pcrlock-file-system.service
-/usr/lib/systemd/system/systemd-pcrlock-firmware-code.service
-/usr/lib/systemd/system/systemd-pcrlock-firmware-config.service
-/usr/lib/systemd/system/systemd-pcrlock-machine-id.service
-/usr/lib/systemd/system/systemd-pcrlock-make-policy.service
-/usr/lib/systemd/system/systemd-pcrlock-secureboot-authority.service
-/usr/lib/systemd/system/systemd-pcrlock-secureboot-policy.service
-/usr/lib/systemd/system/systemd-storagetm.service
-/usr/lib/systemd/systemd-pcrlock
-/usr/lib/systemd/systemd-storagetm
-/usr/share/man/man1/systemd-vmspawn.1.gz
-/usr/share/man/man5/systemd.pcrlock.5.gz
-/usr/share/man/man5/systemd.pcrlock.d.5.gz
-/usr/share/man/man8/systemd-pcrlock-file-system.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-firmware-code.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-firmware-config.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-machine-id.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-make-policy.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-secureboot-authority.service.8.gz
-/usr/share/man/man8/systemd-pcrlock-secureboot-policy.service.8.gz
-/usr/share/man/man8/systemd-pcrlock.8.gz
-/usr/share/man/man8/systemd-storagetm.8.gz
-/usr/share/man/man8/systemd-storagetm.service.8.gz
-#
-/usr/bin/uid0
-/usr/share/man/man1/uid0.1.gz
+/usr/bin/run0
+/usr/share/man/man1/run0.1.gz
 #
 /usr/lib/systemd/system-generators/systemd-tpm2-generator
 /usr/lib/systemd/system/tpm2.target
@@ -188,3 +186,8 @@
 #
 /usr/bin/importctl
 /usr/share/man/man1/importctl.1.gz
+#
+/usr/lib/systemd/system/capsule.slice
+/usr/lib/systemd/system/capsule@.service
+/usr/lib/systemd/user/capsule@.target
+/usr/share/man/man5/capsule@.service.5.gz

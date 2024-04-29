@@ -558,6 +558,7 @@
 %{_mandir}/man3/sd_hwdb_unref.3.gz
 %{_mandir}/man3/sd_id128_equal.3.gz
 %{_mandir}/man3/sd_id128_from_string.3.gz
+%{_mandir}/man3/sd_id128_get_app_specific.3.gz
 %{_mandir}/man3/sd_id128_get_boot.3.gz
 %{_mandir}/man3/sd_id128_get_boot_app_specific.3.gz
 %{_mandir}/man3/sd_id128_get_invocation.3.gz
@@ -789,3 +790,4 @@
 ###
 /usr/share/man/man3/sd_bus_creds_get_pidfd_dup.3.gz
 /usr/share/man/man3/sd_bus_creds_new_from_pidfd.3.gz
+/usr/share/man/man3/sd_journal_stream_fd_with_namespace.3.gz

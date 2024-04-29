@@ -1,6 +1,7 @@
 #
 # Please keep the list sorted (with `LC_ALL=C sort`).
 #
+
 %dir %{_binfmtdir}
 %if %{without bootstrap}
 %dir %{_datadir}/bash-completion
@@ -211,8 +212,8 @@
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_systemd.so.2
 %endif
-%{_libdir}/systemd/libsystemd-core-*.so
-%{_libdir}/systemd/libsystemd-shared-*.so
+%{_libdir}/systemd/libsystemd-core-%{systemd_major}.so
+%{_libdir}/systemd/libsystemd-shared-%{systemd_major}.so
 %if %{without bootstrap}
 %{_mandir}/man1/busctl.1.gz
 %{_mandir}/man1/hostnamectl.1.gz
@@ -325,6 +326,7 @@
 %{_mandir}/man8/nss-myhostname.8.gz
 %{_mandir}/man8/nss-systemd.8.gz
 %{_mandir}/man8/pam_systemd.8.gz
+%{_mandir}/man8/pam_systemd_loadkey.8.gz
 %{_mandir}/man8/poweroff.8.gz
 %{_mandir}/man8/reboot.8.gz
 %{_mandir}/man8/shutdown.8.gz
@@ -394,6 +396,7 @@
 %endif
 %{_modprobedir}/systemd.conf
 %{_pam_moduledir}/pam_systemd.so
+%{_pam_moduledir}/pam_systemd_loadkey.so
 %{_pam_vendordir}/systemd-user
 %{_sbindir}/halt
 %{_sbindir}/init
@@ -415,6 +418,7 @@
 %{_systemd_util_dir}/systemd-binfmt
 %{_systemd_util_dir}/systemd-boot-check-no-failures
 %{_systemd_util_dir}/systemd-cgroups-agent
+%{_systemd_util_dir}/systemd-executor
 %{_systemd_util_dir}/systemd-hostnamed
 %{_systemd_util_dir}/systemd-journald
 %{_systemd_util_dir}/systemd-localed
@@ -535,7 +539,8 @@
 %{_unitdir}/printer.target
 %{_unitdir}/proc-sys-fs-binfmt_misc.automount
 %{_unitdir}/proc-sys-fs-binfmt_misc.mount
-%{_unitdir}/quotaon.service
+%{_unitdir}/quotaon-root.service
+%{_unitdir}/quotaon@.service
 %{_unitdir}/reboot.target
 %{_unitdir}/remote-fs-pre.target
 %{_unitdir}/remote-fs.target
@@ -550,6 +555,7 @@
 %{_unitdir}/sockets.target
 %{_unitdir}/sockets.target.wants/systemd-journald-dev-log.socket
 %{_unitdir}/sockets.target.wants/systemd-journald.socket
+%{_unitdir}/sockets.target.wants/systemd-sysext.socket
 %{_unitdir}/soft-reboot.target
 %{_unitdir}/sound.target
 %{_unitdir}/swap.target
@@ -613,6 +619,8 @@
 %{_unitdir}/systemd-soft-reboot.service
 %{_unitdir}/systemd-sysctl.service
 %{_unitdir}/systemd-sysext.service
+%{_unitdir}/systemd-sysext.socket
+%{_unitdir}/systemd-sysext@.service
 %{_unitdir}/systemd-sysusers.service
 %{_unitdir}/systemd-time-wait-sync.service
 %{_unitdir}/systemd-timedated.service
@@ -650,9 +658,7 @@
 /sbin/reboot
 /sbin/shutdown
 %endif
-#
-/usr/lib/systemd/systemd-executor
-#
+%if %{systemd_major} >= 256
 /usr/share/mime/packages/io.systemd.xml
 #
 /usr/lib/systemd/sshd_config.d/20-systemd-userdb.conf
@@ -675,3 +681,5 @@
 /usr/lib/tmpfiles.d/20-systemd-ssh-generator.conf
 /usr/share/man/man1/systemd-ssh-proxy.1.gz
 /usr/share/man/man8/systemd-ssh-generator.8.gz
+/usr/lib/systemd/system/ssh-access.target
+%endif

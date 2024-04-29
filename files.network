@@ -8,6 +8,8 @@
 %{_bindir}/networkctl
 %{_datadir}/bash-completion/completions/networkctl
 %{_datadir}/dbus-1/interfaces/org.freedesktop.network1.DHCPServer.xml
+%{_datadir}/dbus-1/interfaces/org.freedesktop.network1.DHCPv4Client.xml
+%{_datadir}/dbus-1/interfaces/org.freedesktop.network1.DHCPv6Client.xml
 %{_datadir}/dbus-1/interfaces/org.freedesktop.network1.Link.xml
 %{_datadir}/dbus-1/interfaces/org.freedesktop.network1.Manager.xml
 %{_datadir}/dbus-1/interfaces/org.freedesktop.network1.Network.xml
@@ -78,11 +80,10 @@
 %{_unitdir}/systemd-resolved.service
 %endif
 #
-/usr/share/dbus-1/interfaces/org.freedesktop.network1.DHCPv4Client.xml
-/usr/share/dbus-1/interfaces/org.freedesktop.network1.DHCPv6Client.xml
-#
 /usr/lib/systemd/network/80-6rd-tunnel.link
 /usr/lib/systemd/network/80-container-vb.link
 /usr/lib/systemd/network/80-container-ve.link
 /usr/lib/systemd/network/80-container-vz.link
 /usr/lib/systemd/network/80-vm-vt.link
+#
+/usr/lib/systemd/system/systemd-networkd-persistent-storage.service
