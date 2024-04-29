@@ -37,6 +37,7 @@
 %dir %{_sysconfdir}/systemd/system.conf.d
 %dir %{_sysconfdir}/systemd/user
 %dir %{_sysconfdir}/systemd/user.conf.d
+%dir %{_sysconfdir}/sysusers.d
 %dir %{_sysconfdir}/tmpfiles.d
 %dir %{_sysconfdir}/xdg/systemd
 %dir %{_sysctldir}
@@ -539,8 +540,15 @@
 %{_unitdir}/printer.target
 %{_unitdir}/proc-sys-fs-binfmt_misc.automount
 %{_unitdir}/proc-sys-fs-binfmt_misc.mount
+%if %{with upstream}
 %{_unitdir}/quotaon-root.service
+%endif
+%if %{without upstream}
+%{_unitdir}/quotaon.service
+%endif
+%if %{with upstream}
 %{_unitdir}/quotaon@.service
+%endif
 %{_unitdir}/reboot.target
 %{_unitdir}/remote-fs-pre.target
 %{_unitdir}/remote-fs.target
@@ -650,14 +658,6 @@
 %{_unitdir}/user@.service.d/10-login-barrier.conf
 %{_unitdir}/user@0.service.d/10-login-barrier.conf
 %{xinitconfdir}/xinitrc.d/50-systemd-user.sh
-%if %{with split_usr}
-/bin/systemctl
-/sbin/halt
-/sbin/init
-/sbin/poweroff
-/sbin/reboot
-/sbin/shutdown
-%endif
 %if %{systemd_major} >= 256
 /usr/share/mime/packages/io.systemd.xml
 #
@@ -682,4 +682,23 @@
 /usr/share/man/man1/systemd-ssh-proxy.1.gz
 /usr/share/man/man8/systemd-ssh-generator.8.gz
 /usr/lib/systemd/system/ssh-access.target
+#
+/usr/lib/systemd/system/sysinit.target.wants/systemd-hibernate-clear.service
+/usr/lib/systemd/system/systemd-hibernate-clear.service
+/usr/lib/systemd/system/systemd-mountfsd.service
+/usr/lib/systemd/system/systemd-mountfsd.socket
+/usr/lib/systemd/system/systemd-nsresourced.service
+/usr/lib/systemd/system/systemd-nsresourced.socket
+/usr/lib/systemd/systemd-mountfsd
+/usr/lib/systemd/systemd-mountwork
+/usr/lib/systemd/systemd-nsresourced
+/usr/lib/systemd/systemd-nsresourcework
+/usr/share/man/man8/systemd-hibernate-clear.service.8.gz
+/usr/share/man/man8/systemd-mountfsd.8.gz
+/usr/share/man/man8/systemd-mountfsd.service.8.gz
+/usr/share/man/man8/systemd-nsresourced.8.gz
+/usr/share/man/man8/systemd-nsresourced.service.8.gz
+/usr/share/polkit-1/actions/io.systemd.mount-file-system.policy
 %endif
+#
+/usr/share/bash-completion/completions/systemd-confext

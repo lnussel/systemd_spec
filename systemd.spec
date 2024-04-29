@@ -41,7 +41,7 @@
 # source service leaves version line alone if it's a macro
 %define systemd_version    256
 %define systemd_release    0
-%define archive_version    +suse.15.g96edf7ad18
+%define archive_version    +suse.22.g56b53b17bc
 %define systemd_major      %{sub %systemd_version 1 3}
 %endif
 %endif
@@ -95,7 +95,6 @@
 # The following features are kept to ease migrations toward SLE. Their default
 # value is independent of the build flavor.
 %bcond_without  filetriggers
-%bcond_with     split_usr
 %bcond_with     devel_mode
 
 # We stopped shipping main config files in /etc but we have to restore any
@@ -239,6 +238,7 @@ Source209:      files.homed
 Source210:      files.lang
 Source211:      files.journal-remote
 Source212:      files.portable
+Source213:      files.devel-doc
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -250,28 +250,21 @@ Source212:      files.portable
 # get rid of one of them !
 #
 %if %{with downstream_build}
-Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
+Patch:          0001-Drop-support-for-efivar-SystemdOptions.patch
+Patch:          0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
-Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
-Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
+Patch:          0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
+Patch:          0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
 
 %if %{without upstream}
-
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
 # very few cases, some stuff might be broken in upstream and need to be fixed or
 # worked around quickly. In these cases, the patches are added temporarily and
 # will be removed as soon as a proper fix will be merged by upstream.
-Patch5001:      5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
-Patch5002:      5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
-# jsc#PED-5659
-Patch5006:      5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
-Patch5007:      5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
-Patch5008:      5008-test-Add-effective-cgroup-limits-testing.patch
-Patch5009:      5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
-Patch5010:      5010-cgroup-Rename-effective-limits-internal-table.patch
-
+Patch:          5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
+Patch:          5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
 %endif
 # /downstream_build
 %endif
@@ -377,6 +370,8 @@ Requires(postun):coreutils
 # 'regenerate_initrd_post' macro is expanded during build, hence this BR.
 BuildRequires:  suse-module-tools
 %if %{without bootstrap}
+# fdisk is a build requirement for repart
+BuildRequires:  pkgconfig(fdisk)
 BuildRequires:  pkgconfig(libcryptsetup) >= 1.6.0
 BuildRequires:  pkgconfig(libkmod) >= 15
 # Enable fido2 and tpm supports in systemd-cryptsetup, systemd-enroll. However
@@ -675,6 +670,7 @@ Requires:       busybox-static
 Requires:       cryptsetup
 Requires:       dhcp-client
 Requires:       dosfstools
+Requires:       iproute2
 Requires:       jq
 Requires:       libcap-progs
 Requires:       libfido2
@@ -684,7 +680,6 @@ Requires:       libtss2-rc0
 Requires:       lz4
 Requires:       make
 Requires:       mtools
-Requires:       net-tools-deprecated
 Requires:       netcat
 Requires:       python3-pexpect
 Requires:       qemu
@@ -746,8 +741,6 @@ Summary:        Experimental systemd features
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
-# fdisk is a build requirement for repart
-BuildRequires:  pkgconfig(fdisk)
 
 %description experimental
 This package contains optional extra services that are considered as previews
@@ -762,7 +755,8 @@ change without the usual backwards-compatibility promises.
 Components that turn out to be stable and considered as fully supported will be
 merged into the main package or moved into a dedicated package.
 
-Currently this package contains: repart, oomd, measure, pcrphase and ukify.
+Currently this package contains: bsod, oomd, measure, pcrextend, pcrlock,
+storagetm, sysupdate, tpm2-setup, userwork and ukify.
 
 Have fun (at your own risk).
 %endif
@@ -771,12 +765,12 @@ Have fun (at your own risk).
 %lang_package
 
 %package doc
-Summary:        HTML documentation for systemd
+Summary:        Additional documentation or doc formats for systemd
 License:        LGPL-2.1-or-later
-Supplements:    (systemd and patterns-base-documentation)
 
 %description doc
-The HTML documentation for systemd.
+A HTML version of the systemd documentation, plus the manual pages
+for the C APIs.
 %endif
 
 %prep
@@ -797,10 +791,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %endif
         -Dversion-tag=%{version}%{archive_version} \
         -Ddocdir=%{_docdir}/systemd \
-%if %{with split_usr}
-        -Drootprefix=/usr \
-        -Dsplit-usr=true \
-%endif
         -Dconfigfiledir=/usr/lib \
         -Dsplit-bin=true \
         -Dsystem-uid-max=499 \
@@ -874,6 +864,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dpasswdqc=%{when_not bootstrap} \
         -Dpwquality=%{when_not bootstrap} \
         -Dseccomp=%{when_not bootstrap} \
+        -Drepart=%{when_not bootstrap} \
         -Dstoragetm=%{when_not bootstrap} \
         -Dtpm=%{when_not bootstrap} \
         -Dtpm2=%{when_not bootstrap} \
@@ -911,7 +902,6 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dresolve=%{when resolved} \
         \
         -Doomd=%{when experimental} \
-        -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
 %if %{with sd_boot}
         -Dukify=%{when experimental} \
@@ -956,27 +946,6 @@ mkdir -p %{buildroot}%{_systemd_util_dir}/rpm
 install -m0755 %{SOURCE100} %{buildroot}%{_systemd_util_dir}/rpm/
 %endif
 install -m0755 %{SOURCE101} %{buildroot}%{_systemd_util_dir}/rpm/
-%endif
-
-%if %{with split_usr}
-mkdir -p %{buildroot}/{bin,sbin}
-# Legacy paths
-ln -s ../usr/bin/udevadm %{buildroot}/sbin/
-ln -s ../usr/bin/systemctl %{buildroot}/bin/
-
-ln -s ../usr/lib/systemd/systemd %{buildroot}/sbin/init
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/reboot
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/halt
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/shutdown
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/poweroff
-# Legacy sysvinit tools
-%if %{with sysvcompat}
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/telinit
-ln -s ../usr/bin/systemctl %{buildroot}/sbin/runlevel
-%endif
-# kmod keeps insisting on using /lib/modprobe.d only.
-mkdir -p %{buildroot}%{_modprobedir}
-mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
 %endif
 
 # Make sure /usr/lib/modules-load.d exists in udev(-mini)?, so other
@@ -1043,6 +1012,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/udev/iocost.conf.d
 
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/network
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/nspawn
+
+mkdir -p %{buildroot}%{_sysconfdir}/sysusers.d/
 
 # This dir must be owned (and thus created) by systemd otherwise the build
 # system will complain. This is odd since we simply own a ghost file in it...
@@ -1462,30 +1433,24 @@ fi
 %if %{with filetriggers}
 %include %{SOURCE7}
 %endif
-# /downstream_build
 %endif
 
 %files
-%defattr(-,root,root)
 %include %{SOURCE200}
 
 %files -n udev%{?mini}
-%defattr(-,root,root)
 %include %{SOURCE201}
 
 %if %{with sd_boot}
 %files boot
-%defattr(-,root,root)
 %include %{SOURCE206}
 %endif
 
 %files container
-%defattr(-,root,root)
 %include %{SOURCE202}
 
 %if %{with networkd} || %{with resolved}
 %files network
-%defattr(-,root,root)
 %include %{SOURCE203}
 
 %files network-config-default
@@ -1497,31 +1462,26 @@ fi
 %endif
 
 %files devel
-%defattr(-,root,root,-)
 %license LICENSE.LGPL2.1
 %include %{SOURCE204}
 
 %if %{with sysvcompat}
 %files sysvcompat
-%defattr(-,root,root,-)
 %include %{SOURCE205}
 %endif
 
 %files -n libsystemd0%{?mini}
-%defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
 %{_libdir}/libsystemd.so.0.*.0
 
 %files -n libudev%{?mini}1
-%defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
 %{_libdir}/libudev.so.1.7.*
 
 %if %{with coredump}
 %files coredump
-%defattr(-,root,root)
 %include %{SOURCE208}
 %endif
 
@@ -1530,37 +1490,32 @@ fi
 %include %{SOURCE210}
 
 %files doc
-%defattr(-,root,root,-)
 %{_docdir}/systemd/
+%include %{SOURCE213}
 %endif
 
 %if %{with journal_remote}
 %files journal-remote
-%defattr(-, root, root)
 %include %{SOURCE211}
 %endif
 
 %if %{with homed}
 %files homed
-%defattr(-,root,root)
 %include %{SOURCE209}
 %endif
 
 %if %{with portabled}
 %files portable
-%defattr(-,root,root)
 %include %{SOURCE212}
 %endif
 
 %if %{with testsuite}
 %files testsuite
-%defattr(-,root,root)
 %{_testsuitedir}
 %endif
 
 %if %{with experimental}
 %files experimental
-%defattr(-,root,root)
 %include %{SOURCE207}
 %endif
 
