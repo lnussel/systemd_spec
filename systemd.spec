@@ -616,6 +616,15 @@ Recommends:     knot
 Recommends:     selinux-policy-devel
 Recommends:     selinux-policy-targeted
 %endif
+# System users/groups that some tests rely on.
+Requires:       group(bin)
+Requires:       group(daemon)
+Requires:       group(games)
+Requires:       group(nobody)
+Requires:       user(bin)
+Requires:       user(daemon)
+Requires:       user(games)
+Requires:       user(nobody)
 # The following deps on libs are for test-dlopen-so whereas the pkgconfig ones
 # are used by test-funtions to find the libs on the host and install them in the
 # image, see install_missing_libraries() for details.
