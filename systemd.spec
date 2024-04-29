@@ -743,11 +743,6 @@ for the C APIs.
 %autosetup -p1 -n systemd-v%{version}%{archive_version}
 
 %build
-# Disable _FORTIFY_SOURCE=3 as it get confused by the use of
-# malloc_usable_size() (bsc#1200819). There used to be a workaround but it was
-# reverted, see 2cfb790391958ada34284290af1f9ab863a515c7 for the details.
-export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
-
 %meson \
         -Dmode=release \
         -Dversion-tag=%{version}%{archive_version} \
