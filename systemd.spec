@@ -18,19 +18,24 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define archive_version +suse.22.g67a5ac1043
+%if 0%{?_build_in_place}
+%define version_override %(v=$(git describe --tag --abbrev=0 | sed -e 's/^v//;s/-/~/');r=$(git log '-n1' '--date=format:%%Y%%m%%d.%%H%%M%%S' '--no-show-signature' "--pretty=format:+git%%cd.%%h");echo "$v$r")
+%endif
 
+%if %{defined version_override}
+%define systemd_major      %version_override
+%else
 %define systemd_major      256
-#define systemd_minor      1
+%define systemd_minor      1
+%define archive_version    +suse.28.g53e2aaaf9d
+
+%endif
+
 %define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
-%define libudev_version    1.7.8
-%define libsystemd_version 0.38.0
+%define systemd_release    %{?release_override}%{!?release_override:0}
 
 %define _testsuitedir %{_systemd_util_dir}/tests
 %define xinitconfdir %{?_distconfdir}%{!?_distconfdir:%{_sysconfdir}}/X11/xinit
-%if 0%{?_build_in_place}
-%define git_version %(v=$(git describe --tag --abbrev=0 | sed -e 's/^v//;s/-/~/');r=$(git log '-n1' '--date=format:%%Y%%m%%d.%%H%%M%%S' '--no-show-signature' "--pretty=format:+git%%cd.%%h");echo "$v$r")
-%endif
 
 # Similar to %%with but returns true/false. The 'true' value can be redefined
 # when a second parameter is passed.
@@ -73,6 +78,8 @@
 %bcond_without  html
 %endif
 
+%bcond_with upstream
+
 # The following features are kept to ease migrations toward SLE. Their default
 # value is independent of the build flavor.
 %bcond_without  filetriggers
@@ -95,8 +102,10 @@ fi \
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        %{?git_version}
-Release:        1
+# Allow users to specify the version and release when building the rpm by
+# setting the %version_override and %release_override macros.
+Version:        %systemd_version
+Release:        %systemd_release
 Summary:        A System and Session Manager
 License:        LGPL-2.1-or-later
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -171,9 +180,10 @@ Requires(post): coreutils
 Requires(post): findutils
 Requires(post): systemd-presets-branding
 Requires(post): pam-config >= 0.79-5
-# This Recommends because some symbols of libpcre2 are dlopen()ed by journalctl
+# These weak dependencies because some features are optional and enabled at
+# runtime with the presence of the relevant libs.
 Recommends:     libpcre2-8-0
-Recommends:     libbpf0
+Recommends:     libbpf1
 %endif
 Provides:       group(systemd-journal)
 Conflicts:      filesystem < 11.5
@@ -241,6 +251,8 @@ Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
 Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 %endif
 
+%if %{without upstream}
+
 # Patches listed below are put in quarantine. Normally all changes must go to
 # upstream first and then are cherry-picked in the SUSE git repository. But for
 # very few cases, some stuff might be broken in upstream and need to be fixed or
@@ -258,6 +270,7 @@ Patch5008:      5008-test-Add-effective-cgroup-limits-testing.patch
 Patch5009:      5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
 Patch5010:      5010-cgroup-Rename-effective-limits-internal-table.patch
 
+%endif
 # /downstream_build
 %endif
 
@@ -385,6 +398,15 @@ Conflicts:      util-linux < 2.16
 %if %{with bootstrap}
 Conflicts:      udev
 Provides:       udev = %{version}-%{release}
+%endif
+%if %{with upstream}
+BuildRequires:  pkgconfig(xencontrol)
+BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(dbus-1)
+Recommends:     libarchive13
+Recommends:     libxkbcommon0
 %endif
 
 %description -n udev%{?mini}
@@ -661,7 +683,7 @@ Requires:       make
 Requires:       mtools
 Requires:       netcat
 Requires:       python3-pexpect
-Requires:       qemu-kvm
+Requires:       qemu
 Requires:       quota
 Requires:       socat
 Requires:       squashfs
@@ -766,7 +788,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %else
         -Dmode=release \
 %endif
-        -Dversion-tag=%{version} \
+        -Dversion-tag=%{version}%{?archive_version} \
         -Ddocdir=%{_docdir}/systemd \
 %if %{with split_usr}
         -Drootprefix=/usr \
@@ -845,7 +867,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dsbat-distro-url="%{?sbat_distro_url}" \
         \
         -Dsbat-distro-pkgname="%{name}" \
-        -Dsbat-distro-version="%{version}-%{release}" \
+        -Dsbat-distro-version="%{version}%[%{without upstream}?"-%{release}":""]" \
         \
         -Ddefault-dnssec=no \
         -Ddns-servers='' \
@@ -1453,13 +1475,13 @@ fi
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.%{libsystemd_version}
+%{_libdir}/libsystemd.so.0.*.0
 
 %files -n libudev%{?mini}1
 %defattr(-,root,root)
 %license LICENSE.LGPL2.1
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.%{libudev_version}
+%{_libdir}/libudev.so.1.7.*
 
 %if %{with coredump}
 %files coredump
