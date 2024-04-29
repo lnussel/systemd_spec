@@ -1,7 +1,7 @@
 #
 # spec file
 #
-# Copyright (c) 2023 SUSE LLC
+# Copyright (c) 2024 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -18,10 +18,9 @@
 
 %global flavor @BUILD_FLAVOR@%{nil}
 
-%define min_kernel_version 4.5
-%define archive_version +suse.2.g1f73719d67
+%define archive_version +suse.22.g67a5ac1043
 
-%define systemd_major      255
+%define systemd_major      256
 #define systemd_minor      1
 %define systemd_version    %{systemd_major}%{?systemd_minor:.%{systemd_minor}}
 %define libudev_version    1.7.8
@@ -71,7 +70,6 @@
 %endif
 %bcond_without  experimental
 %bcond_without  testsuite
-%bcond_without  utmp
 %bcond_without  html
 %endif
 
@@ -80,6 +78,20 @@
 %bcond_without  filetriggers
 %bcond_with     split_usr
 %bcond_with     devel_mode
+
+# We stopped shipping main config files in /etc but we have to restore any
+# config files that might have been backed up by rpm during the migration of the
+# main config files from /etc to /usr. This needs to be done in %%posttrans
+# because the .rpmsave files are created when the *old* package version is
+# removed. This is not needed by ALP and will be dropped from Factory near the
+# end of 2024.
+%define restore_rpmsave() \
+if [ -e %{_sysconfdir}/%{1}.rpmsave ] && [ ! -e %{_sysconfdir}/%{1} ]; then \
+        echo >&2 "Restoring %{_sysconfdir}/%1. Please consider moving your customizations in a drop-in instead." \
+        echo >&2 "For more details, visit https://en.opensuse.org/Systemd#Configuration." \
+        mv -v %{_sysconfdir}/%{1}.rpmsave %{_sysconfdir}/%{1} || : \
+fi \
+%{nil}
 
 Name:           systemd%{?mini}
 URL:            http://www.freedesktop.org/wiki/Software/systemd
@@ -92,7 +104,6 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  bpftool
 BuildRequires:  clang
 BuildRequires:  docbook-xsl-stylesheets
-BuildRequires:  kbd
 %if %{with apparmor}
 BuildRequires:  libapparmor-devel
 %endif
@@ -129,9 +140,6 @@ BuildRequires:  libmount-devel >= 2.27.1
 BuildRequires:  meson >= 0.53.2
 BuildRequires:  pam-devel
 BuildRequires:  python3-Jinja2
-# regenerate_initrd_post macro is expanded during build, hence this BR. Also
-# this macro was introduced since version 12.4.
-BuildRequires:  suse-module-tools >= 12.4
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(blkid) >= 2.26
 %if 0%{?_build_in_place}
@@ -167,6 +175,7 @@ Requires(post): pam-config >= 0.79-5
 Recommends:     libpcre2-8-0
 Recommends:     libbpf0
 %endif
+Provides:       group(systemd-journal)
 Conflicts:      filesystem < 11.5
 Conflicts:      mkinitrd < 2.7.0
 Provides:       sbin_init
@@ -196,7 +205,6 @@ Source5:        tmpfiles-suse.conf
 Source6:        baselibs.conf
 %if %{with downstream_build}
 Source7:        triggers.systemd
-Source11:       after-local.service
 Source14:       kbd-model-map.legacy
 
 Source100:      fixlet-container-post.sh
@@ -214,6 +222,8 @@ Source207:      files.experimental
 Source208:      files.coredump
 Source209:      files.homed
 Source210:      files.lang
+Source211:      files.journal-remote
+Source212:      files.portable
 
 #
 # All changes backported from upstream are tracked by the git repository, which
@@ -225,7 +235,6 @@ Source210:      files.lang
 # get rid of one of them !
 #
 %if %{with downstream_build}
-Patch2:         0001-conf-parser-introduce-early-drop-ins.patch
 Patch3:         0009-pid1-handle-console-specificities-weirdness-for-s390.patch
 %if %{with sysvcompat}
 Patch4:         0002-rc-local-fix-ordering-startup-for-etc-init.d-boot.lo.patch
@@ -237,7 +246,17 @@ Patch5:         0008-sysv-generator-translate-Required-Start-into-a-Wants.patch
 # very few cases, some stuff might be broken in upstream and need to be fixed or
 # worked around quickly. In these cases, the patches are added temporarily and
 # will be removed as soon as a proper fix will be merged by upstream.
-Patch5000:      5000-core-manager-run-generators-directly-when-we-are-in-.patch
+Patch5001:      5001-Revert-udev-update-devlink-with-the-newer-device-nod.patch
+Patch5002:      5002-Revert-udev-revert-workarounds-for-issues-caused-by-.patch
+# jsc#PED-5659
+Patch5003:      5003-cgroup-rename-TasksMax-structure-to-CGroupTasksMax.patch
+Patch5004:      5004-bus-print-properties-ignore-CGROUP_LIMIT_MAX-for-Mem.patch
+Patch5005:      5005-bus-print-properties-prettify-more-unset-properties.patch
+Patch5006:      5006-cgroup-Add-EffectiveMemoryMax-EffectiveMemoryHigh-an.patch
+Patch5007:      5007-test-Convert-rlimit-test-to-subtest-of-generic-limit.patch
+Patch5008:      5008-test-Add-effective-cgroup-limits-testing.patch
+Patch5009:      5009-cgroup-Restrict-effective-limits-with-global-resourc.patch
+Patch5010:      5010-cgroup-Rename-effective-limits-internal-table.patch
 
 # /downstream_build
 %endif
@@ -328,7 +347,9 @@ URL:            http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
 Requires:       filesystem
+%if %{without bootstrap}
 Requires:       kmod
+%endif
 Requires:       system-group-hardware
 Requires:       group(kvm)
 Requires:       group(lp)
@@ -338,6 +359,8 @@ Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
 Requires(postun):coreutils
+# 'regenerate_initrd_post' macro is expanded during build, hence this BR.
+BuildRequires:  suse-module-tools
 %if %{without bootstrap}
 BuildRequires:  pkgconfig(libcryptsetup) >= 1.6.0
 BuildRequires:  pkgconfig(libkmod) >= 15
@@ -472,7 +495,7 @@ see nss-mymachines(8) manpage for more details.
 
 %if %{with networkd} || %{with resolved}
 %package network
-Summary:        systemd network and Network Name Resolution managers
+Summary:        Systemd Network And Network Name Resolution Managers
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
 %systemd_requires
@@ -693,8 +716,6 @@ refer to %{_testsuitedir}/integration-tests/README.testsuite.
 Summary:        Experimental systemd features
 License:        LGPL-2.1-or-later
 Requires:       %{name} = %{version}-%{release}
-# Needed by ukify
-Requires:       python3-pefile
 %systemd_requires
 # fdisk is a build requirement for repart
 BuildRequires:  pkgconfig(fdisk)
@@ -751,13 +772,15 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Drootprefix=/usr \
         -Dsplit-usr=true \
 %endif
+        -Dconfigfiledir=/usr/lib \
         -Dsplit-bin=true \
         -Dsystem-uid-max=499 \
         -Dsystem-gid-max=499 \
         -Dclock-valid-range-usec-max=946728000000000 \
         -Dadm-group=false \
         -Dwheel-group=false \
-        -Dutmp=%{when utmp} \
+        -Dgroup-render-mode=0660 \
+        -Dutmp=false \
         -Ddefault-hierarchy=unified \
         -Ddefault-kill-user-processes=false \
         -Dpamconfdir=no \
@@ -772,8 +795,9 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 %if %{without sysvcompat}
         -Dsysvinit-path= \
         -Dsysvrcnd-path= \
-%endif
+%else
         -Drc-local=/etc/init.d/boot.local \
+%endif
         -Dcreate-log-dirs=false \
         -Ddebug-shell=/bin/bash \
         \
@@ -791,6 +815,7 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Dhtml=%{when html} \
         -Dima=%{when_not bootstrap} \
         -Dkernel-install=%{when_not bootstrap} \
+        -Dkmod=%{when_not bootstrap} \
         -Dlibcryptsetup-plugins=%{when_not bootstrap} \
         -Dman=%{when_not bootstrap} \
         -Dnss-myhostname=%{when_not bootstrap} \
@@ -830,6 +855,11 @@ export CFLAGS="%{optflags} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
         -Doomd=%{when experimental} \
         -Drepart=%{when experimental} \
         -Dsysupdate=%{when experimental} \
+%if %{with sd_boot}
+        -Dukify=%{when experimental} \
+%else
+        -Dukify=false \
+%endif
         \
         -Dxenctrl=disabled \
 	\
@@ -857,13 +887,10 @@ rm %{buildroot}%{_mandir}/man1/resolvconf.1*
 install -m0755 -D %{SOURCE3} %{buildroot}/%{_systemd_util_dir}/systemd-update-helper
 %if %{with sysvcompat}
 install -m0755 -D %{SOURCE4} %{buildroot}/%{_systemd_util_dir}/systemd-sysv-install
-%else
-# XXX: bug upstream installing manpage even when disabled
-rm %{buildroot}%{_mandir}/man8/systemd-update-utmp-runlevel.service.8
 %endif
 
-mkdir -p % %{buildroot}%{_sysconfdir}/systemd/network
-mkdir -p % %{buildroot}%{_sysconfdir}/systemd/nspawn
+# Drop-ins are currently not supported by udev.
+mv %{buildroot}%{_prefix}/lib/udev/udev.conf %{buildroot}%{_sysconfdir}/udev/
 
 %if %{with downstream_build}
 # Install the fixlets
@@ -894,6 +921,10 @@ ln -s ../usr/bin/systemctl %{buildroot}/sbin/runlevel
 mkdir -p %{buildroot}%{_modprobedir}
 mv %{buildroot}/usr/lib/modprobe.d/* %{buildroot}%{_modprobedir}/
 %endif
+
+# Make sure /usr/lib/modules-load.d exists in udev(-mini)?, so other
+# packages can install modules without worry
+mkdir -p %{buildroot}%{_modulesloaddir}
 
 # Make sure we don't ship static enablement symlinks in /etc during
 # installation, presets should be honoured instead.
@@ -936,6 +967,26 @@ rm -f %{buildroot}%{_environmentdir}/99-environment.conf
 # directory... oh well.
 rm -f %{buildroot}%{_sysconfdir}/init.d/README
 
+# Create *.conf.d/ directories to encourage users to create drop-ins when they
+# need to customize some setting defaults.
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/coredump.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journald.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journal-remote.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/journal-upload.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/logind.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/networkd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/oomd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/pstore.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/resolved.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/sleep.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/system.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/timesyncd.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/user.conf.d
+mkdir -p %{buildroot}%{_sysconfdir}/udev/iocost.conf.d
+
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/network
+mkdir -p %{buildroot}%{_sysconfdir}/systemd/nspawn
+
 # This dir must be owned (and thus created) by systemd otherwise the build
 # system will complain. This is odd since we simply own a ghost file in it...
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
@@ -975,12 +1026,6 @@ mkdir -p %{buildroot}%{_userpresetdir}
 mkdir -p %{buildroot}%{_systemd_system_env_generator_dir}
 mkdir -p %{buildroot}%{_systemd_user_env_generator_dir}
 
-# Ensure after.local wrapper is called.
-%if %{with downstream_build}
-install -m 644 %{SOURCE11} %{buildroot}%{_unitdir}/
-ln -s ../after-local.service %{buildroot}%{_unitdir}/multi-user.target.wants/
-%endif
-
 # ghost directories with default permissions.
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
 
@@ -995,32 +1040,18 @@ rm -f %buildroot/etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf
 
 %fdupes -s %{buildroot}%{_mandir}
 
-# Make sure to disable all services by default. The SUSE branding presets
-# package takes care of defining the right policies.
+# Make sure to disable all services by default. The branding presets package
+# takes care of defining the SUSE policies.
 rm -f %{buildroot}%{_presetdir}/*.preset
 echo 'disable *' >%{buildroot}%{_presetdir}/99-default.preset
 echo 'disable *' >%{buildroot}%{_userpresetdir}/99-default.preset
 
-# The current situation with tmpfiles snippets dealing with the generic paths is
-# pretty messy currently because:
-#
-#  1. filesystem package wants to define the generic paths and some of them
-#     conflict with the definition given by systemd in var.conf, see
-#     bsc#1078466.
-#
-#  2. /tmp and /var/tmp are not cleaned by default on SUSE distros (fate#314974)
-#     which conflict with tmp.conf.
-#
-#  3. There're also legacy.conf which defines various legacy paths which either
-#     don't match the SUSE defaults or don't look needed at all.
-#
-#  4. We don't want the part in etc.conf which imports default upstream files in
-#     empty /etc, see below.
-#
-# To keep things simple, we remove all these tmpfiles config files but still
-# keep the remaining paths that still don't have a better home in suse.conf.
+# Most of the entries for the generic paths are defined by filesystem package as
+# the definitions used by SUSE distros diverged from the ones defined by
+# systemd. For lack of a better place some (deprecated) paths are still shipped
+# along with the systemd package.
 rm -f %{buildroot}%{_tmpfilesdir}/{etc,home,legacy,tmp,var}.conf
-install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
+install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/systemd-suse.conf
 
 # The content of the files shipped by systemd doesn't match the
 # defaults used by SUSE. Don't ship those files but leave the decision
@@ -1029,18 +1060,6 @@ install -m 644 %{SOURCE5} %{buildroot}%{_tmpfilesdir}/suse.conf
 rm -fr %{buildroot}%{_datadir}/factory/*
 
 %if %{with downstream_build}
-# Add entries for xkeyboard-config converted keymaps; mappings, which already
-# exist in original systemd mapping table are being ignored though, i.e. not
-# overwritten; needed as long as YaST uses console keymaps internally and calls
-# localectl to convert from vconsole to X11 keymaps. Ideally YaST should switch
-# to X11 layout names (the mapping table wouldn't be needed since each X11
-# keymap has a generated xkbd keymap) and let localectl initialize
-# /etc/vconsole.conf and /etc/X11/xorg.conf.d/00-keyboard.conf (FATE#319454).
-if [ -f /usr/share/systemd/kbd-model-map.xkb-generated ]; then
-        cat /usr/share/systemd/kbd-model-map.xkb-generated \
-                >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
-fi
-
 # kbd-model-map.legacy is used to provide mapping for legacy keymaps, which may
 # still be used by yast.
 cat %{SOURCE14} >>%{buildroot}%{_datarootdir}/systemd/kbd-model-map
@@ -1075,17 +1094,15 @@ rm -fr %{buildroot}%{_docdir}/systemd
 # to be run during the build and complains if it can't find one.
 %pre
 %if %{with downstream_build}
-if [ $1 -gt 1 ]; then
-        # We keep these just in case we're upgrading from an old version that
-        # was missing one of these units. During package installation, these
-        # macros are NOPs for the main package (the branding preset package
-        # takes care of applying the presets in its %%posttrans in this case).
-        %systemd_pre remote-fs.target
-        %systemd_pre getty@.service
-        %systemd_pre systemd-timesyncd.service
-        %systemd_pre systemd-journald-audit.socket
-        %systemd_pre systemd-userdbd.socket
-fi
+# We don't really need to enable these units explicitely since during
+# installation `systemctl preset-all` is executed at the end of the install
+# transaction by the branding preset package. However it might be needed when
+# upgrading from a previous version of systemd that didn't ship one of these
+# units.
+%systemd_pre remote-fs.target
+%systemd_pre getty@.service
+%systemd_pre systemd-journald-audit.socket
+%systemd_pre systemd-userdbd.service
 
 %post
 if [ $1 -eq 1 ]; then
@@ -1122,30 +1139,36 @@ systemd-tmpfiles --create || :
 journalctl --update-catalog || :
 %endif
 
-if [ $1 -gt 1 ]; then
-        # See comments for %%systemd_pre in %%pre.
-        %systemd_post remote-fs.target
-        %systemd_post getty@.service
-        %systemd_post systemd-timesyncd.service
-        %systemd_post systemd-journald-audit.socket
-        %systemd_post systemd-userdbd.socket
-fi
+# See the comment in %%pre about why we need to call %%systemd_pre.
+%systemd_post remote-fs.target
+%systemd_post getty@.service
+%systemd_post systemd-journald-audit.socket
+%systemd_post systemd-userdbd.service
 
-# Run the hacks/fixups to clean up old garbages left by (very) old versions of
+# Run the hacks/fixups to clean up the old stuff left by (very) old versions of
 # systemd.
 %{_systemd_util_dir}/rpm/fixlet-systemd-post.sh $1 || :
 
 %postun
 # Avoid restarting logind until fixed upstream (issue #1163)
+%systemd_postun_with_restart systemd-hostnamed.service
 %systemd_postun_with_restart systemd-journald.service
-%systemd_postun_with_restart systemd-timesyncd.service
+%systemd_postun_with_restart systemd-localed.service
+%systemd_postun_with_restart systemd-timedated.service
 %systemd_postun_with_restart systemd-userdbd.service
+
+%posttrans
+%restore_rpmsave systemd/journald.conf
+%restore_rpmsave systemd/logind.conf
+%restore_rpmsave systemd/system.conf
+%restore_rpmsave systemd/user.conf
 
 %pre -n udev%{?mini}
 # Units listed below can be enabled at installation accoding to their preset
 # setting.
 %systemd_pre remote-cryptsetup.target
 %systemd_pre systemd-pstore.service
+%systemd_pre systemd-timesyncd.service
 
 # New installations uses the last compat symlink generation number (currently at
 # 2), which basically disables all compat symlinks. On old systems, the file
@@ -1164,10 +1187,12 @@ fi
 %endif
 %systemd_post remote-cryptsetup.target
 %systemd_post systemd-pstore.service
+%systemd_post systemd-timesyncd.service
 
 %preun -n udev%{?mini}
 %systemd_preun systemd-udevd.service systemd-udevd-{control,kernel}.socket
 %systemd_preun systemd-pstore.service
+%systemd_preun systemd-timesyncd.service
 
 %postun -n udev%{?mini}
 %regenerate_initrd_post
@@ -1187,16 +1212,18 @@ fi
 # frame where no socket will be listening to the events sent by the kernel, no
 # matter if the socket unit is restarted in first or not.
 %systemd_postun_with_restart systemd-udevd.service systemd-udevd-{control,kernel}.socket
+%systemd_postun_with_restart systemd-timesyncd.service
 %systemd_postun systemd-pstore.service
 
 %posttrans -n udev%{?mini}
 %regenerate_initrd_posttrans
+%restore_rpmsave systemd/pstore.conf
+%restore_rpmsave systemd/sleep.conf
+%restore_rpmsave systemd/timesyncd.conf
+%restore_rpmsave udev/iocost.conf
 
-%post -n libudev%{?mini}1 -p %ldconfig
-%post -n libsystemd0%{?mini} -p %ldconfig
-
-%postun -n libudev%{?mini}1 -p %ldconfig
-%postun -n libsystemd0%{?mini} -p %ldconfig
+%ldconfig_scriptlets -n libsystemd0%{?mini}
+%ldconfig_scriptlets -n libudev%{?mini}1
 
 %if %{with machined}
 %pre container
@@ -1206,47 +1233,58 @@ fi
 %systemd_preun machines.target
 
 %postun container
-%systemd_postun machines.target
 %ldconfig
+%systemd_postun machines.target
 %endif
 
 %post container
 %if %{with machined}
+%ldconfig
 %if %{without filetriggers}
 %tmpfiles_create systemd-nspawn.conf
 %endif
 %systemd_post machines.target
-%ldconfig
 %{_systemd_util_dir}/rpm/fixlet-container-post.sh $1 || :
 %endif
 
 %if %{with coredump}
 %post coredump
+%if %{without filetriggers}
 %sysusers_create systemd-coredump.conf
+
+%posttrans coredump
+%restore_rpmsave systemd/coredump.conf
+%endif
 %endif
 
 %if %{with journal_remote}
 %pre journal-remote
-%systemd_pre systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_pre systemd-journal-remote.socket systemd-journal-remote.service
+%systemd_pre systemd-journal-gatewayd.service
+%systemd_pre systemd-journal-remote.service
 %systemd_pre systemd-journal-upload.service
 
 %post journal-remote
 # Assume that all files shipped by systemd-journal-remove are owned by root.
+%if %{without filetriggers}
 %sysusers_create systemd-remote.conf
-%systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_post systemd-journal-remote.socket systemd-journal-remote.service
+%endif
+%systemd_post systemd-journal-gatewayd.service
+%systemd_post systemd-journal-remote.service
 %systemd_post systemd-journal-upload.service
 
 %preun journal-remote
-%systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_preun systemd-journal-remote.socket systemd-journal-remote.service
+%systemd_preun systemd-journal-gatewayd.service
+%systemd_preun systemd-journal-remote.service
 %systemd_preun systemd-journal-upload.service
 
 %postun journal-remote
-%systemd_postun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_postun systemd-journal-remote.socket systemd-journal-remote.service
-%systemd_postun systemd-journal-upload.service
+%systemd_postun_with_restart systemd-journal-gatewayd.service
+%systemd_postun_with_restart systemd-journal-remote.service
+%systemd_postun_with_restart systemd-journal-upload.service
+
+%posttrans journal-remote
+%restore_rpmsave systemd/journal-remote.conf
+%restore_rpmsave systemd/journal-upload.conf
 %endif
 
 %if %{with networkd} || %{with resolved}
@@ -1270,7 +1308,10 @@ fi
 %endif
 %if %{with resolved}
 %ldconfig
+%if %{without filetriggers}
 %sysusers_create systemd-resolve.conf
+%tmpfiles_create systemd-resolve.conf
+%endif
 %systemd_post systemd-resolved.service
 %endif
 
@@ -1292,6 +1333,10 @@ fi
 %ldconfig
 %systemd_postun systemd-resolved.service
 %endif
+
+%posttrans network
+%restore_rpmsave systemd/networkd.conf
+%restore_rpmsave systemd/resolved.conf
 %endif
 
 %if %{with homed}
@@ -1337,7 +1382,9 @@ fi
 %systemd_pre systemd-oomd.service systemd-oomd.socket
 
 %post experimental
+%if %{without filetriggers}
 %sysusers_create systemd-oom.conf
+%endif
 %systemd_post systemd-homed.service
 %systemd_post systemd-oomd.service systemd-oomd.socket
 
@@ -1348,6 +1395,9 @@ fi
 %postun experimental
 %systemd_postun systemd-homed.service
 %systemd_postun systemd-oomd.service systemd-oomd.socket
+
+%posttrans experimental
+%restore_rpmsave systemd/oomd.conf
 %endif
 
 # File trigger definitions
@@ -1429,22 +1479,7 @@ fi
 %if %{with journal_remote}
 %files journal-remote
 %defattr(-, root, root)
-%config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
-%config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
-%{_unitdir}/systemd-journal-gatewayd.*
-%{_unitdir}/systemd-journal-remote.*
-%{_unitdir}/systemd-journal-upload.*
-%{_systemd_util_dir}/systemd-journal-gatewayd
-%{_systemd_util_dir}/systemd-journal-remote
-%{_systemd_util_dir}/systemd-journal-upload
-%{_sysusersdir}/systemd-remote.conf
-%{_mandir}/man5/journal-remote.conf*
-%{_mandir}/man5/journal-upload.conf*
-%{_mandir}/man8/systemd-journal-gatewayd.*
-%{_mandir}/man8/systemd-journal-remote.*
-%{_mandir}/man8/systemd-journal-upload.*
-%{_datadir}/systemd/gatewayd
-%ghost %dir %{_localstatedir}/log/journal/remote
+%include %{SOURCE211}
 %endif
 
 %if %{with homed}
@@ -1456,17 +1491,7 @@ fi
 %if %{with portabled}
 %files portable
 %defattr(-,root,root)
-%{_bindir}/portablectl
-%{_systemd_util_dir}/systemd-portabled
-%{_systemd_util_dir}/portable
-%{_unitdir}/systemd-portabled.service
-%{_unitdir}/dbus-org.freedesktop.portable1.service
-%{_datadir}/dbus-1/system.d/org.freedesktop.portable1.conf
-%{_datadir}/dbus-1/system-services/org.freedesktop.portable1.service
-%{_datadir}/polkit-1/actions/org.freedesktop.portable1.policy
-%{_tmpfilesdir}/portables.conf
-%{_mandir}/man*/portablectl*
-%{_mandir}/man*/systemd-portabled*
+%include %{SOURCE212}
 %endif
 
 %if %{with testsuite}
