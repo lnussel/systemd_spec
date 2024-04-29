@@ -147,6 +147,7 @@
 #
 /usr/bin/run0
 /usr/share/man/man1/run0.1.gz
+/usr/share/bash-completion/completions/run0
 #
 /usr/lib/systemd/system-generators/systemd-tpm2-generator
 /usr/lib/systemd/system/tpm2.target
@@ -155,6 +156,7 @@
 /usr/bin/systemd-vpick
 /usr/share/man/man1/systemd-vpick.1.gz
 /usr/share/man/man7/systemd.v.7.gz
+/usr/share/bash-completion/completions/systemd-vpick
 #
 /usr/lib/systemd/system/sockets.target.wants/systemd-pcrlock.socket
 /usr/lib/systemd/system/systemd-pcrlock.socket
@@ -163,6 +165,7 @@
 #
 /usr/bin/importctl
 /usr/share/man/man1/importctl.1.gz
+/usr/share/bash-completion/completions/importctl
 #
 /usr/lib/systemd/system/capsule.slice
 /usr/lib/systemd/system/capsule@.service
