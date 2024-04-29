@@ -88,3 +88,5 @@
 #
 /usr/lib/systemd/system/systemd-networkd-persistent-storage.service
 /usr/lib/systemd/network/80-namespace-ns.network
+#
+/usr/lib/systemd/network/80-namespace-ns.link
