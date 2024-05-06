@@ -702,3 +702,4 @@
 %endif
 #
 /usr/share/bash-completion/completions/systemd-confext
+/usr/lib/systemd/system/systemd-journald-sync@.service
