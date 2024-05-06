@@ -1,5 +1,5 @@
 #
-# spec file
+# spec file for package systemd
 #
 # Copyright (c) 2024 SUSE LLC
 #
@@ -359,7 +359,7 @@ Requires:       filesystem
 # kmod executable is needed by kmod-static-nodes.service
 Requires:       kmod
 # By v256 libkmod will be dlopen()ed.
-Requires:       libkmod
+Requires:       libkmod2
 %endif
 Requires:       system-group-hardware
 Requires:       group(kvm)
@@ -369,7 +369,7 @@ Requires:       group(lp)
 Requires(pre):  group(kvm)
 Requires(post): sed
 Requires(post): coreutils
-Requires(postun):coreutils
+Requires(postun): coreutils
 # 'regenerate_initrd_post' macro is expanded during build, hence this BR.
 BuildRequires:  suse-module-tools
 %if %{without bootstrap}
